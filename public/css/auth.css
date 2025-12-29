@@ -577,3 +577,9 @@ button, input{ font: inherit; }
 /* Login form ngắn -> đỡ dư trắng, vẫn giữ cảm giác giống register */
 .auth-login .views { min-height: 480px; }
 @media (max-width: 520px){ .auth-login .views { min-height: 560px; } }
+
+/* Reset password form cao vừa phải */
+.auth-reset .views { min-height: 520px; }
+@media (max-width: 520px){
+  .auth-reset .views { min-height: 600px; }
+}

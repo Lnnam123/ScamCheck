@@ -1,3 +1,11 @@
 [2025-12-29T17:02:25.747Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"nam","userId":7,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
 [2025-12-29T17:02:29.277Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"nam","userId":7,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
 [2025-12-29T17:02:32.658Z] [INFO] LOGIN_SUCCESS {"userId":7,"username":"nam","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T17:11:36.411Z] [INFO] SERVER_STARTED {"port":3000}
+[2025-12-29T17:11:36.427Z] [INFO] DB_CONNECT_SUCCESS
+[2025-12-29T17:12:04.155Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"admin","userId":6,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T17:12:04.848Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"admin","userId":6,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T17:12:04.997Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"admin","userId":6,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T17:12:05.196Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"admin","userId":6,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T17:12:08.772Z] [INFO] LOGIN_SUCCESS {"userId":6,"username":"admin","role":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T17:12:16.654Z] [INFO] FORGOT_RESET_LINK {"resetLink":"http://localhost:3000/reset-password.html?token=a720bf6b11dbf81734a4b2341a0726ef7485ffa55577fc028fe24814202a4b3a"}
