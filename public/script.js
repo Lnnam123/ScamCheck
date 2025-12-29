@@ -1,10 +1,10 @@
 /*
-  ScamCheck - Auth client
-  - Login page: login + forgot views (animated)
-  - Register page: standalone
+  ScamCheck - Client Auth (clean)
+  - login.html: login + forgot (switch view via hash #forgot)
+  - register.html: standalone register
+  - reset-password.html: reset with token
 */
 
-// ================= Helpers =================
 const $ = (id) => document.getElementById(id);
 
 function isEmail(str) {
@@ -21,269 +21,283 @@ async function postJSON(url, payload) {
   return { res, data };
 }
 
-function setFieldError(fieldEl, errorEl, message) {
-  if (!fieldEl || !errorEl) return;
-  if (message) {
-    fieldEl.classList.add("error");
-    errorEl.textContent = message;
-    errorEl.classList.add("show");
-  } else {
-    fieldEl.classList.remove("error");
-    errorEl.textContent = "";
-    errorEl.classList.remove("show");
-  }
-}
-
 function toast(message) {
   const el = $("toast");
-  if (!el) return;
+  if (!el) return alert(message);
   el.textContent = message;
   el.classList.add("show");
-  window.clearTimeout(toast._t);
-  toast._t = window.setTimeout(() => el.classList.remove("show"), 2600);
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove("show"), 2600);
 }
 
-function setLoading(btn, isLoading) {
+function setLoading(btn, loading) {
   if (!btn) return;
-  btn.disabled = isLoading;
-  btn.classList.toggle("loading", isLoading);
+  btn.disabled = !!loading;
+  btn.classList.toggle("loading", !!loading);
 }
 
-// ================= Password toggles =================
-(function setupPasswordToggles() {
-  const pairs = [
-    { toggle: "passwordToggle", input: "password" },
-    { toggle: "regPasswordToggle", input: "regPassword" },
-  ];
+function setErr(inputId, msgId, message) {
+  const inp = $(inputId);
+  const msg = $(msgId);
+  if (inp) inp.classList.toggle("error", !!message);
+  if (msg) msg.textContent = message || "";
+}
 
-  pairs.forEach(({ toggle, input }) => {
-    const t = $(toggle);
-    const i = $(input);
-    if (!t || !i) return;
-    t.addEventListener("click", () => {
-      const show = i.type === "password";
-      i.type = show ? "text" : "password";
-      t.classList.toggle("show-password", show);
-    });
+function getToken() {
+  return localStorage.getItem("token") || "";
+}
+
+function saveAuth(token, user) {
+  localStorage.setItem("token", token);
+  localStorage.setItem("user", JSON.stringify(user || {}));
+}
+
+/* =======================
+   PASSWORD TOGGLES
+======================= */
+function wireToggle(toggleId, inputId) {
+  const t = $(toggleId);
+  const i = $(inputId);
+  if (!t || !i) return;
+
+  t.addEventListener("click", () => {
+    const show = i.type === "password";
+    i.type = show ? "text" : "password";
+    t.classList.toggle("show-password", show);
   });
-})();
+}
 
-// ================= Login page (login + forgot views) =================
+wireToggle("passwordToggle", "password");
+wireToggle("regPasswordToggle", "regPassword");
+wireToggle("resetPasswordToggle", "newPassword");
+
+/* =======================
+   LOGIN PAGE: login + forgot
+======================= */
 (function setupLoginPage() {
+  const views = $("views");
   const loginForm = $("loginForm");
   const forgotForm = $("forgotForm");
-  const viewsEl = $("views");
-  if (!viewsEl || (!loginForm && !forgotForm)) return;
-
   const titleEl = $("formTitle");
+  if (!views || (!loginForm && !forgotForm)) return;
+
+  function activate(viewName) {
+    const all = views.querySelectorAll(".view");
+    all.forEach((v) => v.classList.remove("is-active"));
+    const el = views.querySelector(`[data-view="${viewName}"]`);
+    if (el) el.classList.add("is-active");
+
+    if (titleEl) {
+      titleEl.textContent = viewName === "forgot" ? "Quên mật khẩu" : "Đăng nhập";
+    }
+  }
+
+  // initial by hash
+  if (location.hash === "#forgot") activate("forgot");
+  else activate("login");
+
+  // link & back button
   const forgotLink = $("forgotLink");
   const backBtn = $("backToLoginBtn");
 
-  function showView(name, pushHash = true) {
-    const current = viewsEl.querySelector(".view.is-active");
-    const next = viewsEl.querySelector(`.view[data-view="${name}"]`);
-    if (!next) return;
-
-    if (current && current !== next) {
-      current.classList.add("is-leaving");
-      current.classList.remove("is-active");
-      window.setTimeout(() => current.classList.remove("is-leaving"), 380);
-    }
-
-    next.classList.add("is-active");
-    next.classList.remove("is-leaving");
-
-    if (titleEl) titleEl.textContent = name === "forgot" ? "Quên mật khẩu" : "Đăng nhập";
-    if (pushHash) {
-      if (name === "forgot") {
-        if (location.hash !== "#forgot") location.hash = "forgot";
-      } else {
-        // remove hash without jumping
-        if (location.hash) history.replaceState(null, "", window.location.pathname);
-      }
-    }
+  if (forgotLink) {
+    forgotLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      history.replaceState(null, "", "#forgot");
+      activate("forgot");
+    });
   }
 
-  function syncFromHash() {
-    showView(location.hash === "#forgot" ? "forgot" : "login", false);
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      history.replaceState(null, "", " ");
+      activate("login");
+    });
   }
 
-  window.addEventListener("hashchange", syncFromHash);
-  syncFromHash();
-
-  if (forgotLink) forgotLink.addEventListener("click", (e) => {
-    e.preventDefault();
-    showView("forgot");
-  });
-  if (backBtn) backBtn.addEventListener("click", () => showView("login"));
-
-  // ----- LOGIN submit -----
+  // LOGIN submit
   if (loginForm) {
-    const usernameEl = $("username");
-    const passwordEl = $("password");
-    const submitBtn = $("submitBtn");
-
-    const usernameField = $("usernameField") || usernameEl?.closest(".field");
-    const passwordField = $("passwordField") || passwordEl?.closest(".field");
-
-    const usernameError = $("usernameError");
-    const passwordError = $("passwordError");
+    const btn = $("submitBtn");
 
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const username = String(usernameEl?.value || "").trim();
-      const password = String(passwordEl?.value || "");
+      const username = ($("username")?.value || "").trim();
+      const password = $("password")?.value || "";
 
-      setFieldError(usernameField, usernameError, "");
-      setFieldError(passwordField, passwordError, "");
+      setErr("username", "usernameError", "");
+      setErr("password", "passwordError", "");
 
       let ok = true;
       if (!username) {
-        setFieldError(usernameField, usernameError, "Vui lòng nhập tên đăng nhập");
+        setErr("username", "usernameError", "Vui lòng nhập tên đăng nhập");
         ok = false;
       }
       if (!password) {
-        setFieldError(passwordField, passwordError, "Vui lòng nhập mật khẩu");
+        setErr("password", "passwordError", "Vui lòng nhập mật khẩu");
         ok = false;
       }
       if (!ok) return;
 
-      setLoading(submitBtn, true);
+      setLoading(btn, true);
       try {
         const { data } = await postJSON("/api/login", { username, password });
 
-        if (data?.token && data?.user) {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("user", JSON.stringify(data.user));
+        if (data?.token) {
+          saveAuth(data.token, data.user);
 
-          toast("Đăng nhập thành công. Đang chuyển trang...");
-          const next = data.user.role === "admin" ? "admin.html" : "select.html";
-          setTimeout(() => (window.location.href = next), 650);
-        } else {
-          const msg = data?.message || "Đăng nhập thất bại";
-          setFieldError(usernameField, usernameError, msg);
-          setFieldError(passwordField, passwordError, msg);
+          // admin -> admin.html, user -> select.html
+          const role = data?.user?.role;
+          window.location.href = role === "admin" ? "admin.html" : "select.html";
+          return;
         }
+
+        toast(data?.message || "Đăng nhập thất bại");
       } catch {
-        setFieldError(passwordField, passwordError, "Không thể kết nối server");
+        toast("Không thể kết nối server");
       } finally {
-        setLoading(submitBtn, false);
+        setLoading(btn, false);
       }
     });
   }
 
-  // ----- FORGOT submit -----
+  // FORGOT submit
   if (forgotForm) {
-    const emailEl = $("forgotEmail");
-    const submitBtn = $("forgotSubmitBtn");
-    const emailField = $("forgotEmailField") || emailEl?.closest(".field");
-    const emailError = $("forgotEmailError");
+    const btn = $("forgotSubmitBtn");
 
     forgotForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const email = String(emailEl?.value || "").trim();
-      setFieldError(emailField, emailError, "");
+      const email = ($("forgotEmail")?.value || "").trim();
+      setErr("forgotEmail", "forgotEmailError", "");
 
-      if (!email) {
-        setFieldError(emailField, emailError, "Vui lòng nhập email");
-        return;
-      }
-      if (!isEmail(email)) {
-        setFieldError(emailField, emailError, "Email không hợp lệ");
+      if (!email || !isEmail(email)) {
+        setErr("forgotEmail", "forgotEmailError", "Email không hợp lệ");
         return;
       }
 
-      setLoading(submitBtn, true);
+      setLoading(btn, true);
       try {
         const { data } = await postJSON("/api/forgot", { email });
-        toast(data?.message || "Nếu email tồn tại, hệ thống sẽ gửi link đặt lại mật khẩu.");
+        toast(data?.message || "Đã gửi yêu cầu");
       } catch {
         toast("Không thể kết nối server");
       } finally {
-        setLoading(submitBtn, false);
+        setLoading(btn, false);
       }
     });
   }
 })();
 
-// ================= Register page =================
+/* =======================
+   REGISTER PAGE
+======================= */
 (function setupRegisterPage() {
   const form = $("registerForm");
   if (!form) return;
 
-  const usernameEl = $("regUsername");
-  const emailEl = $("regEmail");
-  const passwordEl = $("regPassword");
-  const confirmEl = $("regConfirm");
-  const submitBtn = $("regSubmitBtn");
-
-  const usernameField = $("regUsernameField") || usernameEl?.closest(".field");
-  const emailField = $("regEmailField") || emailEl?.closest(".field");
-  const passwordField = $("regPasswordField") || passwordEl?.closest(".field");
-  const confirmField = $("regConfirmField") || confirmEl?.closest(".field");
-
-  const usernameError = $("regUsernameError");
-  const emailError = $("regEmailError");
-  const passwordError = $("regPasswordError");
-  const confirmError = $("regConfirmError");
+  const btn = $("regSubmitBtn");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const username = String(usernameEl?.value || "").trim();
-    const email = String(emailEl?.value || "").trim();
-    const password = String(passwordEl?.value || "");
-    const confirm = String(confirmEl?.value || "");
+    const username = ($("regUsername")?.value || "").trim();
+    const email = ($("regEmail")?.value || "").trim();
+    const password = $("regPassword")?.value || "";
+    const confirm = $("regConfirm")?.value || "";
 
-    setFieldError(usernameField, usernameError, "");
-    setFieldError(emailField, emailError, "");
-    setFieldError(passwordField, passwordError, "");
-    setFieldError(confirmField, confirmError, "");
+    setErr("regUsername", "regUsernameError", "");
+    setErr("regEmail", "regEmailError", "");
+    setErr("regPassword", "regPasswordError", "");
+    setErr("regConfirm", "regConfirmError", "");
 
     let ok = true;
     if (!username) {
-      setFieldError(usernameField, usernameError, "Vui lòng nhập tên đăng nhập");
+      setErr("regUsername", "regUsernameError", "Vui lòng nhập tên đăng nhập");
       ok = false;
     }
-    if (!email) {
-      setFieldError(emailField, emailError, "Vui lòng nhập email");
-      ok = false;
-    } else if (!isEmail(email)) {
-      setFieldError(emailField, emailError, "Email không hợp lệ");
+    if (!email || !isEmail(email)) {
+      setErr("regEmail", "regEmailError", "Email không hợp lệ");
       ok = false;
     }
-    if (!password) {
-      setFieldError(passwordField, passwordError, "Vui lòng nhập mật khẩu");
-      ok = false;
-    } else if (password.length < 6) {
-      setFieldError(passwordField, passwordError, "Mật khẩu tối thiểu 6 ký tự");
+    if (!password || String(password).length < 6) {
+      setErr("regPassword", "regPasswordError", "Mật khẩu tối thiểu 6 ký tự");
       ok = false;
     }
     if (confirm !== password) {
-      setFieldError(confirmField, confirmError, "Mật khẩu nhập lại không khớp");
+      setErr("regConfirm", "regConfirmError", "Mật khẩu nhập lại không khớp");
       ok = false;
     }
     if (!ok) return;
 
-    setLoading(submitBtn, true);
+    setLoading(btn, true);
     try {
       const { data } = await postJSON("/api/register", { username, email, password });
-      const msg = data?.message || "Có lỗi xảy ra";
+
+      const msg = data?.message || "Xong";
+      toast(msg);
 
       if (String(msg).toLowerCase().includes("thành công")) {
-        toast("Đăng ký thành công! Vui lòng đăng nhập.");
-        setTimeout(() => (window.location.href = "login.html"), 650);
-      } else {
-        // thường là trùng username/email
-        setFieldError(usernameField, usernameError, msg);
-        setFieldError(emailField, emailError, msg);
+        // đưa về login
+        setTimeout(() => (window.location.href = "login.html"), 350);
       }
     } catch {
       toast("Không thể kết nối server");
     } finally {
-      setLoading(submitBtn, false);
+      setLoading(btn, false);
+    }
+  });
+})();
+
+/* =======================
+   RESET PASSWORD PAGE
+======================= */
+(function setupResetPage() {
+  const form = $("resetForm");
+  if (!form) return;
+
+  const btn = $("resetSubmitBtn");
+  const tokenFromUrl = new URLSearchParams(location.search).get("token");
+  if (tokenFromUrl && $("token")) $("token").value = tokenFromUrl;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const token = ($("token")?.value || "").trim();
+    const newPassword = $("newPassword")?.value || "";
+    const confirm = $("confirmPassword")?.value || "";
+
+    setErr("token", "tokenError", "");
+    setErr("newPassword", "newPasswordError", "");
+    setErr("confirmPassword", "confirmPasswordError", "");
+
+    let ok = true;
+    if (!token) {
+      setErr("token", "tokenError", "Vui lòng nhập token");
+      ok = false;
+    }
+    if (!newPassword || String(newPassword).length < 6) {
+      setErr("newPassword", "newPasswordError", "Mật khẩu tối thiểu 6 ký tự");
+      ok = false;
+    }
+    if (confirm !== newPassword) {
+      setErr("confirmPassword", "confirmPasswordError", "Mật khẩu nhập lại không khớp");
+      ok = false;
+    }
+    if (!ok) return;
+
+    setLoading(btn, true);
+    try {
+      const { data } = await postJSON("/api/reset-password", { token, newPassword });
+      toast(data?.message || "Xong");
+
+      if (String(data?.message || "").toLowerCase().includes("thành công")) {
+        setTimeout(() => (window.location.href = "login.html"), 400);
+      }
+    } catch {
+      toast("Không thể kết nối server");
+    } finally {
+      setLoading(btn, false);
     }
   });
 })();
