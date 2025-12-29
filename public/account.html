@@ -32,6 +32,9 @@
 
       <!-- INFO -->
       <div class="field">
+        <label>Họ và tên</label>
+        <input class="input" id="fullname" placeholder="VD: Nguyễn Văn A"
+      <div class="field">
         <label>Tên tài khoản</label>
         <input class="input" id="username" disabled>
       </div>
@@ -95,10 +98,13 @@
   })
   .then(d => {
     if (!d) return;
+    fullname.value = d.fullname || "";
     username.value = d.username || "";
     email.value = d.email || "";
     phone.value = d.phone || "";
     role.value = d.role || "";
+
+    fullname.disabled = (d.role !== "admin"); // chỉ admin được sửa họ tên
   })
   .catch(() => {
     msg.style.color = "var(--danger)";
@@ -116,11 +122,12 @@
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token
       },
-      body: JSON.stringify({
-        email: email.value,
-        phone: phone.value
-      })
+    body: JSON.stringify({
+      email: email.value,
+      phone: phone.value,
+      fullname: fullname.value
     })
+  })
     .then(r => {
       if (r.status === 401) { logout(); return null; }
       return r.json();

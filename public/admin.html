@@ -1,93 +1,541 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin - ScamCheck</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>ScamCheck - Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/select.css">
 </head>
-<body class="admin-page page">
 
-  <div class="pill-nav-wrap">
-    <div class="top-pill-nav">
-      <button class="pill-item" onclick="goHome()">Home</button>
-      <button class="pill-item" onclick="goStats()">Stats</button>
-      <button class="pill-item" onclick="logout()">Log Out</button>
+<body class="app-bg admin-page">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <div class="brand-name">ScamCheck Admin</div>
+          <div class="brand-sub">Quản trị hệ thống</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-pill" onclick="goHome()">Trang chính</button>
+        <button class="nav-pill" onclick="location.href='admin-scam.html'">Danh sách cảnh báo</button>
+        <button class="nav-pill danger" onclick="logout()">Đăng xuất</button>
+      </nav>
     </div>
-  </div>
+  </header>
 
-  <div class="container admin-wrap">
-    <div class="card">
-      <div class="card-title brand">ScamCheck</div>
-      <div class="card-subtitle">Duyệt báo cáo lừa đảo</div>
+  <main class="shell">
+    <section class="hero" style="grid-template-columns:1fr; gap:14px;">
+      <div class="hero-left">
+        <h1 class="headline" style="font-size:40px;">
+          Bảng điều khiển <span class="grad">Admin</span>
+        </h1>
+        <p class="sub">Sửa thông tin user, thêm cảnh báo trực tiếp và xem thống kê Phone/Link.</p>
 
-      <div style="overflow:auto;">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>ID</th><th>Loại</th><th>Giá trị</th><th>Mô tả</th><th>Trạng thái</th><th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody id="list"></tbody>
-        </table>
+        <!-- GRID 2 CARDS -->
+        <div class="admin-grid">
+          <!-- CARD: ADD SCAM + CHART -->
+          <div class="glass-card">
+            <div class="gc-top">
+              <div class="gc-title">Thêm cảnh báo trực tiếp</div>
+              <div class="gc-sub">Admin thêm số điện thoại / link vào danh sách “scam”.</div>
+            </div>
+
+            <div class="gc-actions" style="gap:12px;">
+              <div class="form-row">
+                <div class="fcol">
+                  <label class="flabel">Loại</label>
+                  <select class="finput" id="scamType">
+                    <option value="phone">Số điện thoại</option>
+                    <option value="link">Đường link</option>
+                  </select>
+                </div>
+                <div class="fcol">
+                  <label class="flabel">Giá trị</label>
+                  <input class="finput" id="scamValue" placeholder="VD: 0987654321 hoặc https://abc.com">
+                </div>
+              </div>
+
+              <div class="fcol">
+                <label class="flabel">Mô tả (tuỳ chọn)</label>
+                <textarea class="finput" id="scamDesc" rows="3" placeholder="Mô tả ngắn: giả mạo ngân hàng, dụ OTP..."></textarea>
+              </div>
+
+              <div class="btn-row">
+                <button class="btnx btnx-primary" onclick="addScam()">+ Thêm</button>
+                <button class="btnx btnx-ghost" onclick="clearScamForm()">Làm mới</button>
+              </div>
+
+              <div id="addMsg" class="note"></div>
+            </div>
+
+            <div class="gc-foot" style="justify-content:space-between;">
+              <span>📊 Thống kê cảnh báo (status = scam)</span>
+              <span class="gc-pill" id="countBadge">Phone 0 • Link 0</span>
+            </div>
+
+            <div class="chart-wrap">
+              <canvas id="typeChart" width="520" height="220" aria-label="Bar chart"></canvas>
+            </div>
+          </div>
+
+          <!-- CARD: USER MANAGEMENT -->
+          <div class="glass-card">
+            <div class="gc-top">
+              <div class="gc-title">Quản lý người dùng</div>
+              <div class="gc-sub">Sửa họ tên / email / phone / role.</div>
+            </div>
+
+            <div class="table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="userTable"></tbody>
+              </table>
+            </div>
+
+            <div class="gc-foot">
+              <span>🧩 Tip: Nhấn “Sửa” để mở popup</span>
+              <span class="gc-pill">Admin tools</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL EDIT USER -->
+  <div class="modal" id="editModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">Chỉnh sửa người dùng</div>
+          <div class="modal-sub">Cập nhật họ tên / email / phone / role</div>
+        </div>
+        <button class="icon-btn" onclick="closeModal()" aria-label="Đóng">✕</button>
+      </div>
+
+      <input type="hidden" id="editId">
+
+      <label class="flabel">Họ và tên</label>
+      <input class="finput" id="editFullname" placeholder="VD: Lê Nam">
+
+      <label class="flabel">Email</label>
+      <input class="finput" id="editEmail" placeholder="example@gmail.com">
+
+      <label class="flabel">Số điện thoại</label>
+      <input class="finput" id="editPhone" placeholder="0987654321">
+
+      <label class="flabel">Quyền</label>
+      <select class="finput" id="editRole">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btnx btnx-primary" onclick="saveUser()">Lưu</button>
+        <button class="btnx btnx-ghost" onclick="closeModal()">Huỷ</button>
       </div>
     </div>
   </div>
 
 <script>
-  const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
-  if (!user || !token || user.role !== "admin") { alert("Không có quyền admin!"); location.href="login.html"; }
+  const me = JSON.parse(localStorage.getItem("user") || "null");
+  if (!me || !token || me.role !== "admin") location.href = "login.html";
 
+  // ---------- NAV ----------
   function goHome(){ location.href="select.html"; }
-  function goStats(){ location.href="stats.html"; }
   function logout(){ localStorage.clear(); location.href="login.html"; }
 
-  function api(url, options={}){
-    return fetch(url, {
-      ...options,
-      headers: {
-        ...(options.headers||{}),
+  // ---------- USERS ----------
+  const table = document.getElementById("userTable");
+  const modal = document.getElementById("editModal");
+
+  function fetchUsers(){
+    fetch("/api/admin/users", { headers:{ Authorization:"Bearer " + token } })
+      .then(r=>r.json())
+      .then(list=>{
+        table.innerHTML = "";
+        (list || []).forEach(u=>{
+          table.insertAdjacentHTML("beforeend", `
+            <tr>
+              <td>${u.id}</td>
+              <td>${escapeHtml(u.username || "")}</td>
+              <td>${escapeHtml(u.fullname || "")}</td>
+              <td>${escapeHtml(u.email || "")}</td>
+              <td>${escapeHtml(u.phone || "")}</td>
+              <td><span class="role-pill ${u.role === "admin" ? "r-admin" : "r-user"}">${u.role}</span></td>
+              <td class="td-actions">
+                <button class="btn-mini" onclick='openEdit(${JSON.stringify(u).replace(/</g,"\\u003c")})'>Sửa</button>
+              </td>
+            </tr>
+          `);
+        });
+      });
+  }
+
+  function openEdit(u){
+    document.getElementById("editId").value = u.id;
+    document.getElementById("editFullname").value = u.fullname || "";
+    document.getElementById("editEmail").value = u.email || "";
+    document.getElementById("editPhone").value = u.phone || "";
+    document.getElementById("editRole").value = u.role || "user";
+    modal.style.display = "flex";
+  }
+
+  function closeModal(){ modal.style.display = "none"; }
+
+  function saveUser(){
+    const id = document.getElementById("editId").value;
+    const fullname = document.getElementById("editFullname").value.trim();
+    const email = document.getElementById("editEmail").value.trim();
+    const phone = document.getElementById("editPhone").value.trim();
+    const role = document.getElementById("editRole").value;
+
+    fetch("/api/admin/user/update", {
+      method:"POST",
+      headers:{
         "Content-Type":"application/json",
-        "Authorization":"Bearer "+token
-      }
-    }).then(r=>{
-      if (r.status===401 || r.status===403){ alert("Hết phiên hoặc không đủ quyền"); logout(); return null; }
-      return r;
+        Authorization:"Bearer " + token
+      },
+      body: JSON.stringify({ id, fullname, email, phone, role })
+    })
+    .then(r=>r.json())
+    .then(d=>{
+      alert(d.message || "Xong");
+      closeModal();
+      fetchUsers();
     });
   }
 
-  function load(){
-    api("/api/admin/reports").then(r=>r?r.json():null).then(data=>{
-      if(!data) return;
-      list.innerHTML = data.map(r=>`
-        <tr>
-          <td>${r.id}</td>
-          <td>${r.type}</td>
-          <td>${r.value}</td>
-          <td>${r.description||""}</td>
-          <td>${r.status}</td>
-          <td>
-            <button class="btn btn-danger" onclick="upd(${r.id},'scam')">🚨 Scam</button>
-            <button class="btn btn-success" onclick="upd(${r.id},'safe')">✅ Safe</button>
-          </td>
-        </tr>
-      `).join("");
+  // ---------- ADD SCAM ----------
+  const scamType = document.getElementById("scamType");
+  const scamValue = document.getElementById("scamValue");
+  const scamDesc = document.getElementById("scamDesc");
+  const addMsg = document.getElementById("addMsg");
+
+  function clearScamForm(){
+    scamType.value = "phone";
+    scamValue.value = "";
+    scamDesc.value = "";
+    addMsg.textContent = "";
+    scamValue.focus();
+  }
+
+  function validatePhone(v){ return /^[0-9]{9,12}$/.test(String(v||"").trim()); }
+  function validateUrl(v){
+    try{
+      const u = new URL(String(v||"").trim());
+      return u.protocol === "http:" || u.protocol === "https:";
+    }catch{ return false; }
+  }
+
+  function addScam(){
+    addMsg.textContent = "";
+    const type = scamType.value;
+    const value = scamValue.value.trim();
+    const description = scamDesc.value.trim();
+
+    if (!value){
+      addMsg.textContent = "⚠️ Vui lòng nhập giá trị.";
+      return;
+    }
+    if (type === "phone" && !validatePhone(value)){
+      addMsg.textContent = "⚠️ Số điện thoại không hợp lệ (9–12 chữ số).";
+      return;
+    }
+    if (type === "link" && !validateUrl(value)){
+      addMsg.textContent = "⚠️ Link không hợp lệ (http/https).";
+      return;
+    }
+
+    addMsg.textContent = "Đang thêm...";
+    fetch("/api/admin/scam/add", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        Authorization:"Bearer " + token
+      },
+      body: JSON.stringify({ type, value, description })
+    })
+    .then(r=>r.json())
+    .then(d=>{
+      addMsg.textContent = d.message || "Xong";
+      scamValue.value = "";
+      scamDesc.value = "";
+      refreshTypeCounts(); // update chart
+    })
+    .catch(()=> addMsg.textContent = "❌ Lỗi kết nối server");
+  }
+
+  // ---------- BAR CHART (Phone vs Link) ----------
+  const canvas = document.getElementById("typeChart");
+  const ctx = canvas.getContext("2d");
+  const countBadge = document.getElementById("countBadge");
+
+  function refreshTypeCounts(){
+    fetch("/api/admin/type-counts", { headers:{ Authorization:"Bearer " + token } })
+      .then(r=>r.json())
+      .then(d=>{
+        const phone = Number(d.phone || 0);
+        const link = Number(d.link || 0);
+        countBadge.textContent = `Phone ${phone} • Link ${link}`;
+        drawBarChart(phone, link);
+      });
+  }
+
+  function drawBarChart(phone, link){
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0,0,W,H);
+
+    // background
+    ctx.fillStyle = "rgba(255,255,255,.60)";
+    roundRect(ctx, 10, 10, W-20, H-20, 16);
+    ctx.fill();
+
+    const max = Math.max(1, phone, link);
+    const chartLeft = 60, chartRight = W - 30;
+    const chartTop = 30, chartBottom = H - 50;
+    const chartW = chartRight - chartLeft;
+    const chartH = chartBottom - chartTop;
+
+    // axes
+    ctx.strokeStyle = "rgba(15,23,42,.10)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(chartLeft, chartTop);
+    ctx.lineTo(chartLeft, chartBottom);
+    ctx.lineTo(chartRight, chartBottom);
+    ctx.stroke();
+
+    const bars = [
+      { label:"Phone", value:phone, x: chartLeft + chartW*0.25 },
+      { label:"Link", value:link, x: chartLeft + chartW*0.70 }
+    ];
+
+    const barW = Math.min(90, chartW * 0.22);
+
+    bars.forEach((b,i)=>{
+      const h = Math.round((b.value / max) * (chartH - 10));
+      const x = b.x - barW/2;
+      const y = chartBottom - h;
+
+      // bar fill (không set màu “cứng” kiểu neon; dùng rgba nhẹ)
+      ctx.fillStyle = i===0 ? "rgba(79,70,229,.65)" : "rgba(16,185,129,.55)";
+      roundRect(ctx, x, y, barW, h, 14);
+      ctx.fill();
+
+      // value text
+      ctx.fillStyle = "rgba(15,23,42,.80)";
+      ctx.font = "800 13px Inter, system-ui";
+      ctx.textAlign = "center";
+      ctx.fillText(String(b.value), b.x, y - 10);
+
+      // label
+      ctx.fillStyle = "rgba(100,116,139,.95)";
+      ctx.font = "800 12px Inter, system-ui";
+      ctx.fillText(b.label, b.x, chartBottom + 26);
     });
+
+    // title
+    ctx.fillStyle = "rgba(15,23,42,.78)";
+    ctx.font = "900 13px Inter, system-ui";
+    ctx.textAlign = "left";
+    ctx.fillText("Số lượng cảnh báo theo loại", 22, 28);
   }
 
-  function upd(id,status){
-    api("/api/admin/update",{method:"POST",body:JSON.stringify({id,status})}).then(r=>{ if(r) load(); });
+  function roundRect(c, x, y, w, h, r){
+    const rr = Math.min(r, w/2, h/2);
+    c.beginPath();
+    c.moveTo(x+rr, y);
+    c.arcTo(x+w, y, x+w, y+h, rr);
+    c.arcTo(x+w, y+h, x, y+h, rr);
+    c.arcTo(x, y+h, x, y, rr);
+    c.arcTo(x, y, x+w, y, rr);
+    c.closePath();
   }
 
-  load();
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  // init
+  fetchUsers();
+  refreshTypeCounts();
+
+  // close modal when click outside
+  modal.addEventListener("click", (e)=>{ if(e.target === modal) closeModal(); });
 </script>
+
+<style>
+/* ===== Admin layout grid ===== */
+.admin-grid{
+  margin-top: 18px;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Table wrap */
+.table-wrap{ padding: 0 14px 14px; overflow:auto; }
+.admin-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13.5px;
+}
+.admin-table th,
+.admin-table td{
+  padding: 10px 10px;
+  border-bottom: 1px solid rgba(15,23,42,.08);
+  text-align:left;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.admin-table th{
+  font-weight: 950;
+  background: rgba(255,255,255,.58);
+}
+.admin-table tr:hover{ background: rgba(79,70,229,.06); }
+
+.td-actions{ text-align:right; }
+
+/* Fix button trong table: gọn, đẹp, không “bự” */
+.btn-mini{
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(15,23,42,.12);
+  background: rgba(255,255,255,.78);
+  font-weight: 950;
+  cursor:pointer;
+}
+.btn-mini:hover{ background: rgba(255,255,255,.95); }
+
+/* Role pills */
+.role-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 950;
+  font-size: 12px;
+  border: 1px solid rgba(15,23,42,.10);
+}
+.role-pill.r-admin{
+  color: rgba(239,68,68,.92);
+  background: rgba(239,68,68,.08);
+  border-color: rgba(239,68,68,.18);
+}
+.role-pill.r-user{
+  color: rgba(79,70,229,.95);
+  background: rgba(79,70,229,.08);
+  border-color: rgba(79,70,229,.18);
+}
+
+/* Form controls (admin card) */
+.form-row{ display:grid; grid-template-columns: 160px 1fr; gap: 12px; }
+.fcol{ display:flex; flex-direction:column; gap: 8px; }
+.flabel{
+  font-size: 12.5px;
+  font-weight: 950;
+  color: rgba(15,23,42,.78);
+}
+.finput{
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(15,23,42,.14);
+  background: rgba(255,255,255,.86);
+  padding: 10px 12px;
+  outline:none;
+  font-family: Inter, system-ui;
+}
+.finput:focus{
+  border-color: rgba(79,70,229,.45);
+  box-shadow: 0 0 0 4px rgba(79,70,229,.14);
+}
+
+.btn-row{ display:flex; gap: 10px; }
+
+/* Note */
+.note{
+  font-weight: 850;
+  color: rgba(15,23,42,.70);
+  font-size: 13px;
+  min-height: 18px;
+}
+
+/* Chart wrap */
+.chart-wrap{
+  padding: 0 14px 16px;
+}
+
+/* Modal */
+.modal{
+  position:fixed;
+  inset:0;
+  background: rgba(2,6,23,.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index: 40;
+}
+.modal-card{
+  width: 420px;
+  max-width: calc(100vw - 26px);
+  background: rgba(255,255,255,.95);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 30px 70px rgba(0,0,0,.28);
+  border: 1px solid rgba(15,23,42,.10);
+}
+.modal-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.modal-title{ font-weight: 950; font-size: 16px; }
+.modal-sub{ margin-top:4px; font-size: 12.5px; color: rgba(100,116,139,.95); font-weight: 700; }
+.icon-btn{
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255,255,255,.75);
+  cursor:pointer;
+  font-weight: 950;
+}
+.icon-btn:hover{ background: rgba(255,255,255,.95); }
+
+/* Responsive */
+@media (max-width: 980px){
+  .admin-grid{ grid-template-columns: 1fr; }
+  .form-row{ grid-template-columns: 1fr; }
+}
+</style>
 
 </body>
 </html>

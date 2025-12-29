@@ -9,3 +9,24 @@
 [2025-12-29T17:12:05.196Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"admin","userId":6,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
 [2025-12-29T17:12:08.772Z] [INFO] LOGIN_SUCCESS {"userId":6,"username":"admin","role":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
 [2025-12-29T17:12:16.654Z] [INFO] FORGOT_RESET_LINK {"resetLink":"http://localhost:3000/reset-password.html?token=a720bf6b11dbf81734a4b2341a0726ef7485ffa55577fc028fe24814202a4b3a"}
+[2025-12-29T17:18:49.162Z] [INFO] LOGIN_SUCCESS {"userId":7,"username":"nam","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T17:20:31.667Z] [INFO] FORGOT_RESET_LINK {"resetLink":"http://localhost:3000/reset-password.html?token=95eb8b99100750240644b65294cd346936849a68cba709ddc7967ca4a3bb781d"}
+[2025-12-29T17:20:42.436Z] [WARN] FORGOT_EMAIL_NOT_FOUND {"email":"123@gmail.com"}
+[2025-12-29T17:31:10.761Z] [INFO] LOGIN_SUCCESS {"userId":8,"username":"nguyenhuuquan","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T17:44:09.841Z] [INFO] SERVER_STARTED {"port":3000}
+[2025-12-29T17:44:09.858Z] [INFO] DB_CONNECT_SUCCESS
+[2025-12-29T17:44:24.762Z] [INFO] LOGIN_SUCCESS {"userId":7,"username":"nam","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T17:49:58.841Z] [INFO] LOGIN_SUCCESS {"userId":7,"username":"nam","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T17:56:34.123Z] [INFO] LOGIN_SUCCESS {"userId":6,"username":"admin","role":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T17:59:19.821Z] [INFO] SERVER_STARTED {"port":3000}
+[2025-12-29T17:59:19.840Z] [INFO] DB_CONNECT_SUCCESS
+[2025-12-29T17:59:32.004Z] [INFO] LOGIN_SUCCESS {"userId":6,"username":"admin","role":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T18:03:49.807Z] [INFO] LOGIN_SUCCESS {"userId":8,"username":"nguyenhuuquan","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T18:08:52.304Z] [INFO] LOGIN_SUCCESS {"userId":6,"username":"admin","role":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T18:10:31.801Z] [INFO] SERVER_STARTED {"port":3000}
+[2025-12-29T18:10:31.815Z] [INFO] DB_CONNECT_SUCCESS
+[2025-12-29T18:10:44.035Z] [INFO] LOGIN_SUCCESS {"userId":6,"username":"admin","role":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T18:18:49.769Z] [INFO] LOGIN_SUCCESS {"userId":6,"username":"admin","role":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-29T18:19:06.170Z] [INFO] SERVER_STARTED {"port":3000}
+[2025-12-29T18:19:06.186Z] [INFO] DB_CONNECT_SUCCESS
+[2025-12-29T18:19:18.659Z] [INFO] LOGIN_SUCCESS {"userId":6,"username":"admin","role":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}

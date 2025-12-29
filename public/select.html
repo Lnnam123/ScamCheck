@@ -2,38 +2,114 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>ScamCheck - Select</title>
+  <title>ScamCheck - Trang chính</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/select.css">
 </head>
-<body class="select-page">
 
-  <div class="pill-nav-wrap">
-    <div class="top-pill-nav">
-      <button class="pill-item" onclick="goAccount()">Account</button>
-      <button class="pill-item" onclick="about()">About</button>
-      <button class="pill-item" onclick="logout()">Log Out</button>
-    </div>
-  </div>
-
-  <main class="hero">
-    <div class="hero-inner">
-      <div class="eyebrow" id="helloText">Xin chào</div>
-      <h1 class="hero-title brand">ScamCheck</h1>
-
-      <div class="hero-actions">
-        <button class="btn btn-primary" onclick="goPhone()">Tìm kiếm bằng số điện thoại</button>
-        <button class="btn btn-outline" onclick="goLink()">Tìm kiếm bằng link</button>
+<body class="app-bg select-page">
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
+            <rect width="22" height="22" rx="6" fill="rgba(255,255,255,.9)"/>
+            <path d="M7 8h8v6H7V8zm1.5 1.5v3h5v-3h-5zM7 6h8v1.5H7V6zm0 9h8V16H7v-1z"
+              fill="#4F46E5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">ScamCheck</div>
+          <div class="brand-sub">Tra cứu • Báo cáo • Bảo vệ cộng đồng</div>
+        </div>
       </div>
 
-      <a id="adminShortcut" class="mt-12" href="admin.html" style="display:none;">Vào trang Admin →</a>
+      <nav class="nav">
+        <button class="nav-pill" onclick="goAccount()">Tài khoản</button>
+        <button class="nav-pill" onclick="about()">Giới thiệu</button>
+        <button class="nav-pill danger" onclick="logout()">Đăng xuất</button>
+      </nav>
     </div>
+  </header>
+
+  <!-- Main -->
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-left">
+        <div class="hello" id="helloText">Xin chào</div>
+        <h1 class="headline">
+          Kiểm tra lừa đảo <span class="grad">nhanh</span>, gọn, rõ.
+        </h1>
+        <p class="sub">
+          Chọn phương thức tra cứu: số điện thoại hoặc đường link.
+          Kết quả hiển thị rõ ràng và bạn có thể báo cáo nếu phát hiện dấu hiệu bất thường.
+        </p>
+
+        <div class="cta-row">
+          <a class="cta primary" href="check-phone.html">
+            <span class="cta-ico">📱</span>
+            <span>
+              <b>Kiểm tra số điện thoại</b>
+              <small>Tra cứu & báo cáo</small>
+            </span>
+          </a>
+
+          <a class="cta ghost" href="check-link.html">
+            <span class="cta-ico">🔗</span>
+            <span>
+              <b>Kiểm tra đường link</b>
+              <small>Tra cứu & báo cáo</small>
+            </span>
+          </a>
+        </div>
+
+        <div class="mini-cards">
+          <div class="mini-card">
+            <div class="mini-title">Realtime</div>
+            <div class="mini-sub">Kết quả dựa trên dữ liệu đã duyệt.</div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-title">Bảo mật</div>
+            <div class="mini-sub">Token đăng nhập, reset password có hạn.</div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-title">Dễ dùng</div>
+            <div class="mini-sub">Giao diện gọn, animation mượt.</div>
+          </div>
+        </div>
+
+        <a id="adminShortcut" class="admin-link" href="admin.html" style="display:none;">
+          Vào trang Admin →
+        </a>
+      </div>
+
+      <aside class="hero-right">
+        <div class="glass-card">
+          <div class="gc-top">
+            <div class="gc-badge">Protected</div>
+            <div class="gc-title">Bắt đầu kiểm tra</div>
+            <div class="gc-sub">Chọn phương thức ở bên trái</div>
+          </div>
+
+          <div class="gc-actions">
+            <button class="btnx btnx-primary" onclick="goPhone()">📱 Kiểm tra SĐT</button>
+            <button class="btnx btnx-ghost" onclick="goLink()">🔗 Kiểm tra Link</button>
+          </div>
+
+          <div class="gc-foot">
+            <span>🔒 Hệ thống hoạt động</span>
+            <span class="gc-pill">Secure</span>
+          </div>
+        </div>
+      </aside>
+    </section>
   </main>
 
   <script>
@@ -41,7 +117,10 @@
     const token = localStorage.getItem("token");
     if (!user || !token) location.href = "login.html";
 
-    helloText.innerText = `Xin chào, ${user.username}`;
+    const helloText = document.getElementById("helloText");
+    const adminShortcut = document.getElementById("adminShortcut");
+
+    helloText.innerText = `Xin chào, ${user.fullname || user.username}`;
     if (user.role === "admin") adminShortcut.style.display = "inline-block";
 
     function goPhone(){ location.href = "check-phone.html"; }
@@ -54,6 +133,5 @@
       location.href = "login.html";
     }
   </script>
-
 </body>
 </html>

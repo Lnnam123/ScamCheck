@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>ScamCheck - Danh sách cảnh báo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/select.css">
+</head>
+
+<body class="app-bg admin-page">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-icon">📋</div>
+        <div>
+          <div class="brand-name">Danh sách cảnh báo</div>
+          <div class="brand-sub">Số điện thoại / Link đã thêm vào hệ thống</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-pill" onclick="goAdmin()">Admin</button>
+        <button class="nav-pill" onclick="goHome()">Trang chính</button>
+        <button class="nav-pill danger" onclick="logout()">Đăng xuất</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero" style="grid-template-columns:1fr;">
+      <div class="hero-left">
+        <h1 class="headline" style="font-size:40px;">
+          Quản lý <span class="grad">cảnh báo</span>
+        </h1>
+        <p class="sub">Lọc theo loại, tìm kiếm theo value/mô tả, sắp xếp và phân trang.</p>
+
+        <div class="glass-card" style="margin-top:18px;">
+          <div class="gc-top">
+            <div class="gc-title">Bộ lọc</div>
+            <div class="gc-sub">Dùng filter để sắp xếp theo trang</div>
+          </div>
+
+          <div class="controls">
+            <div class="ctl">
+              <label class="flabel">Loại</label>
+              <select class="finput" id="type">
+                <option value="all">Tất cả</option>
+                <option value="phone">Số điện thoại</option>
+                <option value="link">Đường link</option>
+              </select>
+            </div>
+
+            <div class="ctl">
+              <label class="flabel">Sắp xếp</label>
+              <select class="finput" id="sort">
+                <option value="new">Mới nhất</option>
+                <option value="old">Cũ nhất</option>
+              </select>
+            </div>
+
+            <div class="ctl" style="flex:1;">
+              <label class="flabel">Tìm kiếm</label>
+              <input class="finput" id="q" placeholder="Nhập số / link / mô tả..." />
+            </div>
+
+            <div class="ctl">
+              <label class="flabel">Mỗi trang</label>
+              <select class="finput" id="pageSize">
+                <option>10</option>
+                <option>20</option>
+                <option>50</option>
+              </select>
+            </div>
+
+            <div class="ctl ctl-btn">
+              <button class="btnx btnx-primary" onclick="applyFilter()">Áp dụng</button>
+              <button class="btnx btnx-ghost" onclick="resetFilter()">Reset</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Type</th>
+                  <th>Value</th>
+                  <th>Mô tả</th>
+                  <th>Ngày</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="pager">
+            <div class="pager-left" id="summary">—</div>
+            <div class="pager-right">
+              <button class="btn-mini" onclick="prevPage()">← Trước</button>
+              <span class="page-pill" id="pageInfo">1/1</span>
+              <button class="btn-mini" onclick="nextPage()">Sau →</button>
+            </div>
+          </div>
+
+          <div class="gc-foot">
+            <span>🧾 Dữ liệu: scam_reports (status='scam')</span>
+            <span class="gc-pill" id="countPill">0 items</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+  const token = localStorage.getItem("token");
+  const me = JSON.parse(localStorage.getItem("user") || "null");
+  if (!me || !token || me.role !== "admin") location.href = "login.html";
+
+  const tbody = document.getElementById("tbody");
+  const summary = document.getElementById("summary");
+  const pageInfo = document.getElementById("pageInfo");
+  const countPill = document.getElementById("countPill");
+
+  let state = {
+    page: 1,
+    pageSize: 10,
+    type: "all",
+    sort: "new",
+    q: "",
+    total: 0,
+    totalPages: 1,
+  };
+
+  function goHome(){ location.href="select.html"; }
+  function goAdmin(){ location.href="admin.html"; }
+  function logout(){ localStorage.clear(); location.href="login.html"; }
+
+  function fmtDate(v){
+    if (!v) return "";
+    try{
+      const d = new Date(v);
+      if (isNaN(d.getTime())) return String(v);
+      return d.toLocaleString("vi-VN");
+    }catch{
+      return String(v);
+    }
+  }
+
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  async function load(){
+    const params = new URLSearchParams({
+      page: String(state.page),
+      pageSize: String(state.pageSize),
+      type: state.type,
+      sort: state.sort,
+      q: state.q
+    });
+
+    const res = await fetch("/api/admin/scam/list?" + params.toString(), {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data = await res.json();
+
+    tbody.innerHTML = "";
+    (data.items || []).forEach(it => {
+      tbody.insertAdjacentHTML("beforeend", `
+        <tr>
+          <td>${it.id}</td>
+          <td><span class="role-pill ${it.type === "phone" ? "r-user" : "r-admin"}">${escapeHtml(it.type)}</span></td>
+          <td style="max-width:320px; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(it.value)}</td>
+          <td style="max-width:360px; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(it.description || "")}</td>
+          <td>${escapeHtml(fmtDate(it.created_at))}</td>
+          <td class="td-actions">
+            <button class="btn-mini danger" onclick="removeItem(${it.id})">Xoá</button>
+          </td>
+        </tr>
+      `);
+    });
+
+    state.total = Number(data.total || 0);
+    state.totalPages = Number(data.totalPages || 1);
+
+    const from = state.total === 0 ? 0 : (state.page - 1) * state.pageSize + 1;
+    const to = Math.min(state.total, state.page * state.pageSize);
+
+    summary.textContent = `Hiển thị ${from}-${to} / ${state.total}`;
+    pageInfo.textContent = `${state.page}/${state.totalPages}`;
+    countPill.textContent = `${state.total} items`;
+  }
+
+  function applyFilter(){
+    state.type = document.getElementById("type").value;
+    state.sort = document.getElementById("sort").value;
+    state.q = document.getElementById("q").value.trim();
+    state.pageSize = parseInt(document.getElementById("pageSize").value, 10) || 10;
+    state.page = 1;
+    load();
+  }
+
+  function resetFilter(){
+    document.getElementById("type").value = "all";
+    document.getElementById("sort").value = "new";
+    document.getElementById("q").value = "";
+    document.getElementById("pageSize").value = "10";
+    state = { page:1, pageSize:10, type:"all", sort:"new", q:"", total:0, totalPages:1 };
+    load();
+  }
+
+  function prevPage(){
+    if (state.page <= 1) return;
+    state.page--;
+    load();
+  }
+
+  function nextPage(){
+    if (state.page >= state.totalPages) return;
+    state.page++;
+    load();
+  }
+
+  async function removeItem(id){
+    if (!confirm("Xoá mục này?")) return;
+    const res = await fetch("/api/admin/scam/" + id, {
+      method: "DELETE",
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data = await res.json().catch(()=>({}));
+    alert(data.message || "Xong");
+    // nếu xoá làm rỗng trang hiện tại thì lùi trang
+    if (state.page > 1 && tbody.children.length === 1) state.page--;
+    load();
+  }
+
+  // init
+  document.getElementById("type").value = "all";
+  document.getElementById("sort").value = "new";
+  document.getElementById("pageSize").value = "10";
+  load();
+</script>
+
+<style>
+/* reuse select.css look, only add a few admin styles */
+.controls{
+  padding: 10px 18px 14px;
+  display:flex;
+  gap: 12px;
+  align-items:flex-end;
+  flex-wrap: wrap;
+}
+
+.ctl{ display:flex; flex-direction:column; gap:8px; min-width: 160px; }
+.ctl-btn{ flex-direction:row; gap:10px; }
+
+.flabel{
+  font-size: 12.5px;
+  font-weight: 950;
+  color: rgba(15,23,42,.78);
+}
+.finput{
+  border-radius: 16px;
+  border: 1px solid rgba(15,23,42,.14);
+  background: rgba(255,255,255,.86);
+  padding: 10px 12px;
+  outline:none;
+  font-family: Inter, system-ui;
+}
+.finput:focus{
+  border-color: rgba(79,70,229,.45);
+  box-shadow: 0 0 0 4px rgba(79,70,229,.14);
+}
+
+.table-wrap{ padding: 0 18px 8px; overflow:auto; }
+.admin-table{
+  width:100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.admin-table th, .admin-table td{
+  padding: 10px 10px;
+  border-bottom: 1px solid rgba(15,23,42,.08);
+  text-align:left;
+  white-space: nowrap;
+}
+.admin-table th{ font-weight: 950; background: rgba(255,255,255,.58); }
+.admin-table tr:hover{ background: rgba(79,70,229,.06); }
+
+.td-actions{ text-align:right; }
+
+.btn-mini{
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(15,23,42,.12);
+  background: rgba(255,255,255,.78);
+  font-weight: 950;
+  cursor:pointer;
+}
+.btn-mini:hover{ background: rgba(255,255,255,.95); }
+.btn-mini.danger{
+  border-color: rgba(239,68,68,.20);
+  color: rgba(239,68,68,.90);
+}
+
+.role-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 950;
+  font-size: 12px;
+  border: 1px solid rgba(15,23,42,.10);
+}
+.role-pill.r-admin{
+  color: rgba(16,185,129,.95);
+  background: rgba(16,185,129,.08);
+  border-color: rgba(16,185,129,.18);
+}
+.role-pill.r-user{
+  color: rgba(79,70,229,.95);
+  background: rgba(79,70,229,.08);
+  border-color: rgba(79,70,229,.18);
+}
+
+.pager{
+  padding: 10px 18px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  color: rgba(15,23,42,.68);
+  font-weight: 800;
+  font-size: 13px;
+}
+.pager-right{ display:flex; align-items:center; gap:10px; }
+.page-pill{
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(79,70,229,.10);
+  border: 1px solid rgba(79,70,229,.16);
+  color: rgba(79,70,229,.95);
+  font-weight: 950;
+}
+
+@media (max-width: 980px){
+  .ctl{ min-width: 140px; }
+}
+</style>
+
+</body>
+</html>

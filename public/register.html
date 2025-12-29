@@ -68,8 +68,22 @@
               Protected
             </div>
           </div>
-
           <form class="form" id="registerForm" novalidate>
+            <div class="field">
+                  <label class="label" for="regFullname">Họ và tên</label>
+                  <div class="control">
+                    <input
+                      class="input"
+                      type="text"
+                      id="regFullname"
+                      name="fullname"
+                      placeholder="VD: Nguyên Văn A"
+                      required
+                    />
+                  </div>
+                  <span class="error-message" id="regFullnameError"></span>
+                </div>
+
             <div class="field">
               <label class="label" for="regUsername">Tên đăng nhập</label>
               <div class="control">

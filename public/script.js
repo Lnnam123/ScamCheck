@@ -201,17 +201,23 @@ wireToggle("resetPasswordToggle", "newPassword");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    const fullname = ($("regFullname")?.value || "").trim();
     const username = ($("regUsername")?.value || "").trim();
     const email = ($("regEmail")?.value || "").trim();
     const password = $("regPassword")?.value || "";
     const confirm = $("regConfirm")?.value || "";
 
+    setErr("regFullname", "regFullnameError", "");
     setErr("regUsername", "regUsernameError", "");
     setErr("regEmail", "regEmailError", "");
     setErr("regPassword", "regPasswordError", "");
     setErr("regConfirm", "regConfirmError", "");
 
     let ok = true;
+    if (!fullname) {
+      setErr("regFullname", "regFullnameError", "Vui lòng nhập họ và tên");
+      ok = false;
+    }
     if (!username) {
       setErr("regUsername", "regUsernameError", "Vui lòng nhập tên đăng nhập");
       ok = false;
@@ -232,7 +238,7 @@ wireToggle("resetPasswordToggle", "newPassword");
 
     setLoading(btn, true);
     try {
-      const { data } = await postJSON("/api/register", { username, email, password });
+      const { data } = await postJSON("/api/register", { fullnameusername, email, password });
 
       const msg = data?.message || "Xong";
       toast(msg);

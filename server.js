@@ -53,20 +53,21 @@ function adminOnly(req, res, next) {
   next();
 }
 
+
 /* =========================
    AUTH APIs
 ========================= */
 
 // Register
 app.post("/api/register", async (req, res) => {
-  const { username, email, password } = req.body;
-  if (!username || !email || !password) return res.json({ message: "Thiếu thông tin" });
+  const { fullname, username, email, password } = req.body;
+  if (!fullname || !username || !email || !password) return res.json({ message: "Thiếu thông tin" });
 
   try {
     const hash = await bcrypt.hash(password, 10);
     db.query(
-      "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-      [username, email, hash],
+      "INSERT INTO users (fullname, username, email, password) VALUES (?, ?, ?, ?)",
+      [fullname, username, email, hash],
       (err) => {
         if (err) return res.json({ message: "Username hoặc Email đã tồn tại" });
         return res.json({ message: "Đăng ký thành công" });
@@ -136,7 +137,7 @@ app.post("/api/login", (req, res) => {
 // Get account
 app.get("/api/account", authRequired, (req, res) => {
   db.query(
-    "SELECT username, email, phone, role FROM users WHERE id=?",
+    "SELECT username, fullname, email, phone, role FROM users WHERE id=?",
     [req.user.id],
     (err, result) => {
       if (err || !result || result.length === 0) {
@@ -149,16 +150,31 @@ app.get("/api/account", authRequired, (req, res) => {
 
 // Update account
 app.post("/api/account/update", authRequired, (req, res) => {
-  const { email, phone } = req.body;
-  db.query(
-    "UPDATE users SET email=?, phone=? WHERE id=?",
-    [email || null, phone || null, req.user.id],
+  const { email, phone, fullname } = req.body;
+
+  // user thường chỉ update email/phone
+  if (req.user.role !== "admin") {
+    return db.query(
+      "UPDATE users SET email=?, phone=? WHERE id=?",
+      [email || null, phone || null, req.user.id],
+      (err) => {
+        if (err) return res.status(500).json({ message: "Cập nhật thất bại" });
+        return res.json({ message: "Cập nhật thông tin thành công" });
+      }
+    );
+  }
+
+  // admin: update thêm fullname
+  return db.query(
+    "UPDATE users SET fullname=?, email=?, phone=? WHERE id=?",
+    [fullname || null, email || null, phone || null, req.user.id],
     (err) => {
       if (err) return res.status(500).json({ message: "Cập nhật thất bại" });
       return res.json({ message: "Cập nhật thông tin thành công" });
     }
   );
 });
+
 
 // Change password (Account)
 app.post("/api/account/change-password", authRequired, async (req, res) => {
@@ -289,6 +305,96 @@ app.get("/api/admin/stats", authRequired, adminOnly, (req, res) => {
     if (err) return res.status(500).json({ message: "Lỗi hệ thống" });
     return res.json(result);
   });
+});
+
+app.post("/api/admin/scam/add", authRequired, adminOnly, (req, res) => {
+  const { type, value, description } = req.body;
+
+  const allowedType = new Set(["phone", "link"]);
+  if (!allowedType.has(type) || !value) {
+    return res.status(400).json({ message: "Dữ liệu không hợp lệ" });
+  }
+
+  // Admin thêm trực tiếp => status='scam'
+  db.query(
+    "INSERT INTO scam_reports (type, value, description, status) VALUES (?, ?, ?, 'scam')",
+    [type, value, description || ""],
+    (err, result) => {
+      if (err) return res.status(500).json({ message: "Lỗi hệ thống" });
+      return res.json({ message: "Đã thêm vào danh sách cảnh báo", id: result?.insertId });
+    }
+  );
+});
+
+app.get("/api/admin/type-counts", authRequired, adminOnly, (req, res) => {
+  db.query(
+    "SELECT type, COUNT(*) AS total FROM scam_reports WHERE status='scam' GROUP BY type",
+    (err, rows) => {
+      if (err) return res.status(500).json({ message: "Lỗi hệ thống" });
+
+      // đảm bảo luôn có đủ key
+      const out = { phone: 0, link: 0 };
+      (rows || []).forEach(r => { out[r.type] = Number(r.total) || 0; });
+      res.json(out);
+    }
+  );
+});
+
+app.get("/api/admin/scam/list", authRequired, adminOnly, (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page || "1", 10));
+  const pageSize = Math.min(100, Math.max(5, parseInt(req.query.pageSize || "10", 10)));
+
+  const type = (req.query.type || "all").toLowerCase();     // all|phone|link
+  const sort = (req.query.sort || "new").toLowerCase();     // new|old
+  const q = String(req.query.q || "").trim();
+
+  const where = [];
+  const params = [];
+
+  where.push("status='scam'"); // chỉ list những cái admin đã add (cảnh báo)
+
+  if (type === "phone" || type === "link") {
+    where.push("type=?");
+    params.push(type);
+  }
+
+  if (q) {
+    where.push("(value LIKE ? OR description LIKE ?)");
+    params.push(`%${q}%`, `%${q}%`);
+  }
+
+  const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+  const orderSql = sort === "old" ? "ORDER BY id ASC" : "ORDER BY id DESC";
+  const offset = (page - 1) * pageSize;
+
+  db.query(
+    `SELECT COUNT(*) AS total FROM scam_reports ${whereSql}`,
+    params,
+    (err, countRows) => {
+      if (err) return res.status(500).json({ message: "Lỗi DB" });
+
+      const total = Number(countRows?.[0]?.total || 0);
+
+      db.query(
+        `SELECT id, type, value, description, status, created_at
+         FROM scam_reports
+         ${whereSql}
+         ${orderSql}
+         LIMIT ? OFFSET ?`,
+        [...params, pageSize, offset],
+        (err2, rows) => {
+          if (err2) return res.status(500).json({ message: "Lỗi DB" });
+          res.json({
+            page,
+            pageSize,
+            total,
+            totalPages: Math.max(1, Math.ceil(total / pageSize)),
+            items: rows || [],
+          });
+        }
+      );
+    }
+  );
 });
 
 // =========================
@@ -422,6 +528,47 @@ app.post("/api/reset-password", async (req, res) => {
   );
 });
 
+app.get("/api/admin/users", authRequired, (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Không có quyền" });
+  }
+
+  db.query(
+    "SELECT id, username, fullname, email, phone, role FROM users ORDER BY id DESC",
+    (err, rows) => {
+      if (err) return res.status(500).json({ message: "Lỗi DB" });
+      res.json(rows);
+    }
+  );
+});
+
+app.post("/api/admin/user/update", authRequired, (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Không có quyền" });
+  }
+
+  const { id, fullname, email, phone, role } = req.body;
+  if (!id) return res.status(400).json({ message: "Thiếu ID user" });
+
+  db.query(
+    "UPDATE users SET fullname=?, email=?, phone=?, role=? WHERE id=?",
+    [fullname || null, email || null, phone || null, role || "user", id],
+    (err) => {
+      if (err) return res.status(500).json({ message: "Cập nhật thất bại" });
+      res.json({ message: "Cập nhật user thành công" });
+    }
+  );
+});
+
+app.delete("/api/admin/scam/:id", authRequired, adminOnly, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!id) return res.status(400).json({ message: "ID không hợp lệ" });
+
+  db.query("DELETE FROM scam_reports WHERE id=?", [id], (err) => {
+    if (err) return res.status(500).json({ message: "Xoá thất bại" });
+    res.json({ message: "Đã xoá" });
+  });
+});
 
 /* =========================
    ERROR HANDLER
