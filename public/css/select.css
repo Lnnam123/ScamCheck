@@ -1,0 +1,15 @@
+body.select-page{background:#fff}
+.hero{
+  margin:18px auto 0;max-width:1200px;min-height:520px;border-radius:16px;overflow:hidden;
+  border:1px solid #eef2f7;
+  background:
+    radial-gradient(600px 260px at 20% 45%, rgba(210,255,120,0.55), transparent 60%),
+    radial-gradient(560px 260px at 80% 40%, rgba(255,220,120,0.60), transparent 60%),
+    radial-gradient(520px 240px at 65% 75%, rgba(255,160,190,0.45), transparent 60%),
+    #f8fafc;
+}
+.hero-inner{min-height:520px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:44px 18px}
+.eyebrow{font-size:18px;color:var(--muted);font-weight:700}
+.hero-title{font-family:"Inter",system-ui,sans-serif;font-size:72px;font-weight:900;letter-spacing:-.035em;line-height:1}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+@media (max-width:700px){.hero-title{font-size:48px}}

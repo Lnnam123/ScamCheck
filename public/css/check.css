@@ -1,0 +1,45 @@
+body.check-page{ background: var(--bg); }
+/* ===== RESULT BOX + ANIMATION ===== */
+.result-box{
+  margin-top: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  font-weight: 900;
+  text-align: center;
+  background: rgba(255,255,255,0.75);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .25s ease, transform .25s ease, border-color .25s ease;
+}
+
+.result-box.show{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.result-safe{
+  border-color: rgba(16,185,129,0.55);
+  background: rgba(16,185,129,0.10);
+  color: #065f46;
+}
+
+.result-scam{
+  border-color: rgba(239,68,68,0.55);
+  background: rgba(239,68,68,0.10);
+  color: #7f1d1d;
+}
+
+/* loading spinner */
+.spinner{
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(0,0,0,0.12);
+  border-top-color: rgba(0,0,0,0.55);
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin .8s linear infinite;
+  vertical-align: -3px;
+  margin-right: 8px;
+}
+@keyframes spin{ to { transform: rotate(360deg); } }

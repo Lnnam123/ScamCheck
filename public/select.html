@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>ScamCheck - Select</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/select.css">
+</head>
+<body class="select-page">
+
+  <div class="pill-nav-wrap">
+    <div class="top-pill-nav">
+      <button class="pill-item" onclick="goAccount()">Account</button>
+      <button class="pill-item" onclick="about()">About</button>
+      <button class="pill-item" onclick="logout()">Log Out</button>
+    </div>
+  </div>
+
+  <main class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow" id="helloText">Xin chào</div>
+      <h1 class="hero-title brand">ScamCheck</h1>
+
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="goPhone()">Tìm kiếm bằng số điện thoại</button>
+        <button class="btn btn-outline" onclick="goLink()">Tìm kiếm bằng link</button>
+      </div>
+
+      <a id="adminShortcut" class="mt-12" href="admin.html" style="display:none;">Vào trang Admin →</a>
+    </div>
+  </main>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+    if (!user || !token) location.href = "login.html";
+
+    helloText.innerText = `Xin chào, ${user.username}`;
+    if (user.role === "admin") adminShortcut.style.display = "inline-block";
+
+    function goPhone(){ location.href = "check-phone.html"; }
+    function goLink(){ location.href = "check-link.html"; }
+    function goAccount(){ location.href = "account.html"; }
+    function about(){ alert("ScamCheck - công cụ kiểm tra & báo cáo lừa đảo."); }
+    function logout(){
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>

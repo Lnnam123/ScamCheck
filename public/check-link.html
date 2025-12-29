@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Check Link - ScamCheck</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/check.css">
+</head>
+<body class="check-page page">
+
+  <div class="pill-nav-wrap">
+    <div class="top-pill-nav">
+      <button class="pill-item" onclick="goHome()">Home</button>
+      <button class="pill-item" onclick="about()">About</button>
+      <button class="pill-item" onclick="logout()">Log Out</button>
+    </div>
+  </div>
+
+  <div class="container-sm mt-16">
+    <div class="card">
+      <div class="card-title brand">ScamCheck</div>
+      <div class="card-subtitle">Kiểm tra & báo cáo đường link</div>
+
+      <div class="field">
+        <label>Đường link</label>
+        <input class="input" id="link" placeholder="https://example.com">
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="checkLink()">🔍 Kiểm tra</button>
+      <div id="checkResult" class="result-box"></div>
+      <hr class="hr">
+
+      <div class="field">
+        <label>Mô tả hành vi lừa đảo (nếu có)</label>
+        <textarea class="textarea" id="desc" rows="3"></textarea>
+      </div>
+
+      <button class="btn btn-outline btn-full" onclick="reportLink()">🚨 Báo cáo lừa đảo</button>
+      <p id="reportMsg" class="center mt-12" style="font-weight:900;color:var(--muted)"></p>
+    </div>
+  </div>
+
+<script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
+  if (!user || !token) location.href = "login.html";
+
+  function goHome(){ location.href="select.html"; }
+  function about(){ alert("ScamCheck - công cụ kiểm tra & báo cáo lừa đảo."); }
+  function logout(){ localStorage.clear(); location.href="login.html"; }
+
+  function checkLink(){
+  checkResult.className = "result-box show";
+  checkResult.innerHTML = `<span class="spinner"></span>Đang kiểm tra...`;
+
+  fetch("/api/check", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ type:"link", value: link.value })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    const text = d.result || "";
+    const isScam = text.includes("LỪA ĐẢO") || text.includes("CẢNH BÁO");
+
+    checkResult.className = "result-box show " + (isScam ? "result-scam" : "result-safe");
+    checkResult.innerText = text;
+  })
+  .catch(()=>{
+    checkResult.className = "result-box show result-scam";
+    checkResult.innerText = "❌ Lỗi kết nối server";
+  });
+}
+  function reportLink(){
+    fetch("/api/report", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ type:"link", value: link.value, description: desc.value })
+    }).then(r=>r.json()).then(d=> reportMsg.innerText = d.message);
+  }
+</script>
+
+</body>
+</html>

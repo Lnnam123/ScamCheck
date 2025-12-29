@@ -1,0 +1,114 @@
+/* ===== RESET ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* ===== FONT (SYSTEM – KHÔNG LỖI) ===== */
+body{
+  font-family: system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  color:#111827;
+}
+
+/* ===== FIGMA BACKGROUND – TOÀN BỘ APP ===== */
+.app-bg{
+  min-height:100vh;
+  background:
+    radial-gradient(700px 320px at 18% 45%, rgba(210,255,120,.5), transparent 60%),
+    radial-gradient(640px 320px at 82% 40%, rgba(255,220,120,.55), transparent 60%),
+    radial-gradient(620px 300px at 65% 78%, rgba(255,160,190,.45), transparent 60%),
+    #f8fafc;
+}
+
+/* ===== LAYOUT ===== */
+.page{padding:24px 16px}
+.container{max-width:1100px;margin:auto}
+.container-sm{max-width:420px;margin:auto}
+
+/* ===== CARD ===== */
+.card{
+  background:rgba(255,255,255,.94);
+  border-radius:16px;
+  padding:28px 24px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+  backdrop-filter: blur(6px);
+}
+
+/* ===== TITLE ===== */
+.card-title{
+  font-size:28px;
+  font-weight:800;
+  text-align:center;
+}
+.card-subtitle{
+  text-align:center;
+  color:#6b7280;
+  margin-bottom:16px;
+}
+
+/* ===== FORM ===== */
+.field{margin-bottom:14px}
+.field label{font-weight:700;font-size:14px}
+.input{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid #d1d5db;
+  font-size:15px;
+}
+.input:focus{
+  outline:none;
+  border-color:#6366f1;
+  box-shadow:0 0 0 3px rgba(99,102,241,.2);
+}
+
+/* ===== BUTTON ===== */
+.btn{
+  border:none;
+  border-radius:999px;
+  padding:12px 18px;
+  font-weight:800;
+  cursor:pointer;
+}
+.btn-primary{background:#6366f1;color:#fff}
+.btn-primary:hover{background:#4f46e5}
+.btn-outline{
+  background:#fff;
+  border:1.5px solid #d1d5db;
+}
+.btn-danger{background:#ef4444;color:#fff}
+.btn-success{background:#10b981;color:#fff}
+.btn-full{width:100%}
+
+/* ===== NAV PILL ===== */
+.pill-nav-wrap{margin-bottom:18px}
+.top-pill-nav{
+  display:flex;
+  gap:14px;
+  padding:10px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.9);
+  width:fit-content;
+  margin:auto;
+}
+.pill-item{
+  border:none;
+  background:transparent;
+  padding:8px 14px;
+  border-radius:999px;
+  font-weight:800;
+  cursor:pointer;
+}
+.pill-item:hover{background:#f3f4f6}
+
+/* ===== TABLE ===== */
+.table{
+  width:100%;
+  border-collapse:collapse;
+}
+.table th,.table td{
+  padding:10px;
+  border-bottom:1px solid #e5e7eb;
+  font-size:14px;
+}
+.table thead{background:#6366f1;color:#fff}
+
+/* ===== HR ===== */
+.hr{margin:20px 0;border:none;border-top:1px solid #e5e7eb}
