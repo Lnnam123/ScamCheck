@@ -1,183 +1,102 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>ScamCheck - Kiểm tra đường link</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/check.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScamCheck • Kiểm tra đường link</title>
+  <link rel="stylesheet" href="./css/responsive.css" />
+  <link rel="stylesheet" href="./css/app.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
-
-<body class="app-bg check-page">
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-icon">🔗</div>
-        <div>
-          <div class="brand-name">Kiểm tra đường link</div>
-          <div class="brand-sub">Tra cứu & báo cáo website đáng ngờ</div>
-        </div>
-      </div>
-
-      <nav class="nav">
-        <button class="nav-pill" onclick="goHome()">Home</button>
-        <button class="nav-pill" onclick="about()">Giới thiệu</button>
-        <button class="nav-pill danger" onclick="logout()">Đăng xuất</button>
-      </nav>
-    </div>
-  </header>
-
-  <main class="shell">
-    <section class="panel">
-      <div class="card">
-        <div class="card-head">
-          <div>
-            <div class="card-title">Tra cứu nhanh</div>
-            <div class="card-sub">Dán link để kiểm tra dữ liệu cảnh báo</div>
+<body>
+  <div class="page">
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo"></div>
+          <div class="brand-title">
+            <b>ScamCheck</b>
+            <span>Kiểm tra đường link</span>
           </div>
-          <div class="badge">Protected</div>
         </div>
-
-        <div class="field">
-          <label>Đường link</label>
-          <input class="input" id="link" placeholder="https://example.com" />
-          <div class="helper" id="linkErr"></div>
+        <div class="nav-actions">
+          <a class="btn secondary" href="./select.html">
+            <span class="material-symbols-outlined">arrow_back</span>Quay lại
+          </a>
         </div>
-
-        <div class="actions">
-          <button class="btnx btnx-primary" onclick="checkLink()">🔍 Kiểm tra</button>
-          <button class="btnx btnx-ghost" onclick="fillExample()">Dán ví dụ</button>
-        </div>
-
-        <div id="checkResult" class="result-box"></div>
-
-        <hr class="hr">
-
-        <div class="card-title" style="font-size:16px;margin-bottom:8px;">Báo cáo (nếu có)</div>
-
-        <div class="field">
-          <label>Mô tả hành vi lừa đảo</label>
-          <textarea class="textarea" id="desc" rows="3" placeholder="Mô tả ngắn: đường dẫn chuyển hướng, giả mạo ngân hàng, yêu cầu OTP..."></textarea>
-        </div>
-
-        <button class="btnx btnx-outline" onclick="reportLink()">🚨 Báo cáo lừa đảo</button>
-        <p id="reportMsg" class="note"></p>
       </div>
 
-      <aside class="side">
-        <div class="side-card">
-          <div class="side-title">Gợi ý</div>
-          <ul class="side-list">
-            <li>Ưu tiên dán link đầy đủ (có https://).</li>
-            <li>Nếu link rút gọn, hãy mô tả thêm bối cảnh.</li>
-            <li>Không nhập thông tin cá nhân/OTP vào trang lạ.</li>
-          </ul>
+      <div class="card">
+        <div class="card-body">
+          <h2>Nhập link cần kiểm tra</h2>
+          <p>Kết quả sẽ hiện ở dạng thông báo trên màn hình.</p>
+
+          <form id="linkForm">
+            <div class="field">
+              <div class="label">Đường link</div>
+              <input id="linkValue" type="text" placeholder="Ví dụ: https://example.com" required />
+            </div>
+
+            <div class="row">
+              <button class="btn" type="submit" id="btnCheck">
+                <span class="material-symbols-outlined">search</span>Kiểm tra
+              </button>
+              <button class="btn secondary" type="button" id="btnClear">
+                <span class="material-symbols-outlined">backspace</span>Xóa nhanh
+              </button>
+            </div>
+          </form>
+
+          <div class="notice" style="margin-top:12px;">
+            Mẹo: dán link vào ô, bấm “Kiểm tra” là xong.
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div class="side-card">
-          <div class="side-title">Chuyển nhanh</div>
-          <a class="quick" href="check-phone.html">📱 Kiểm tra số điện thoại</a>
-          <a class="quick" href="select.html">🏠 Về trang chính</a>
-        </div>
-      </aside>
-    </section>
-  </main>
+  <script type="module">
+    import { apiFetch, requireAuth } from "./js/api.js";
+    import { showToast } from "./js/toast.js";
 
-<script>
-  const user = JSON.parse(localStorage.getItem("user"));
-  const token = localStorage.getItem("token");
-  if (!user || !token) location.href = "login.html";
+    if (!requireAuth("./login.html")) {}
 
-  const linkEl = document.getElementById("link");
-  const linkErr = document.getElementById("linkErr");
-  const checkResult = document.getElementById("checkResult");
-  const desc = document.getElementById("desc");
-  const reportMsg = document.getElementById("reportMsg");
+    const form = document.getElementById("linkForm");
+    const input = document.getElementById("linkValue");
+    const btn = document.getElementById("btnCheck");
+    const clearBtn = document.getElementById("btnClear");
 
-  function goHome(){ location.href="select.html"; }
-  function about(){ alert("ScamCheck - công cụ kiểm tra & báo cáo lừa đảo."); }
-  function logout(){ localStorage.clear(); location.href="login.html"; }
-
-  function fillExample(){ linkEl.value = "https://example.com"; linkEl.focus(); }
-
-  function setResult(type, text){
-    checkResult.className = "result-box show " + type;
-    checkResult.textContent = text;
-  }
-
-  function validateUrl(v){
-    const s = String(v || "").trim();
-    try{
-      const u = new URL(s);
-      return u.protocol === "http:" || u.protocol === "https:";
-    }catch{
-      return false;
-    }
-  }
-
-  function checkLink(){
-    const v = linkEl.value.trim();
-    linkErr.textContent = "";
-    checkResult.className = "result-box";
-
-    if (!validateUrl(v)){
-      linkErr.textContent = "Link không hợp lệ. Hãy nhập dạng http:// hoặc https://";
-      linkEl.focus();
-      return;
-    }
-
-    checkResult.className = "result-box show";
-    checkResult.innerHTML = `<span class="spinner"></span>Đang kiểm tra...`;
-
-    fetch("/api/check", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ type:"link", value: v })
-    })
-    .then(r=>r.json())
-    .then(d=>{
-      const text = d.result || "Không có dữ liệu.";
-      const isScam = text.includes("LỪA ĐẢO") || text.includes("CẢNH BÁO");
-      setResult(isScam ? "danger" : "safe", text);
-    })
-    .catch(()=>{
-      setResult("danger", "❌ Lỗi kết nối server");
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      input.focus();
     });
-  }
 
-  function reportLink(){
-    const v = linkEl.value.trim();
-    linkErr.textContent = "";
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const value = input.value.trim();
+      if (!value) return;
 
-    if (!validateUrl(v)){
-      linkErr.textContent = "Vui lòng nhập link hợp lệ trước khi báo cáo.";
-      linkEl.focus();
-      return;
-    }
-    if (!desc.value.trim()){
-      reportMsg.textContent = "⚠️ Hãy nhập mô tả trước khi gửi báo cáo.";
-      return;
-    }
+      btn.disabled = true;
+      btn.querySelector(".material-symbols-outlined").textContent = "hourglass_top";
 
-    reportMsg.textContent = "Đang gửi báo cáo...";
-    fetch("/api/report", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ type:"link", value: v, description: desc.value })
-    })
-    .then(r=>r.json())
-    .then(d=>{
-      reportMsg.textContent = d.message || "Đã gửi.";
-      desc.value = "";
-    })
-    .catch(()=> reportMsg.textContent = "❌ Lỗi kết nối server");
-  }
-</script>
+      try {
+        const data = await apiFetch("/api/check", {
+          method: "POST",
+          auth: false,
+          body: { type: "link", value }
+        });
 
+        const msg = data?.result || "Đã kiểm tra xong.";
+        const type = msg.includes("⚠️") ? "warn" : "ok";
+        showToast({ type, message: msg, duration: 4500 });
+
+      } catch (err) {
+        showToast({ type: "err", message: err.message || "Có lỗi, vui lòng thử lại.", duration: 4500 });
+      } finally {
+        btn.disabled = false;
+        btn.querySelector(".material-symbols-outlined").textContent = "search";
+      }
+    });
+  </script>
 </body>
 </html>

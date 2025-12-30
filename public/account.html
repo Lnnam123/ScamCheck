@@ -1,149 +1,180 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Account - ScamCheck</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Inter: chỉ dùng tốt cho brand -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/account.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScamCheck • Tài khoản</title>
+  <link rel="stylesheet" href="./css/responsive.css" />
+  <link rel="stylesheet" href="./css/app.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
+<body>
+  <div class="page">
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo"></div>
+          <div class="brand-title">
+            <b>ScamCheck</b>
+            <span>Tài khoản</span>
+          </div>
+        </div>
+        <div class="nav-actions">
+          <a class="btn secondary" href="./select.html">
+            <span class="material-symbols-outlined">arrow_back</span>Quay lại
+          </a>
+        </div>
+      </div>
 
-<body class="account-page page">
+      <div class="card">
+        <div class="card-body">
+          <h2>Cập nhật thông tin</h2>
+          <p>Thay đổi email/số điện thoại. Nếu có quyền, bạn có thể sửa họ tên.</p>
 
-  <!-- NAVBAR PILL -->
-  <div class="pill-nav-wrap">
-    <div class="top-pill-nav">
-      <button class="pill-item" onclick="goHome()">Home</button>
-      <button class="pill-item" onclick="about()">About</button>
-      <button class="pill-item" onclick="logout()">Log Out</button>
+          <form id="uForm">
+            <div class="field">
+              <div class="label">Họ và tên</div>
+              <input id="fullname" type="text" placeholder="Bạn không thể sửa mục này" />
+            </div>
+            <div class="field">
+              <div class="label">Email</div>
+              <input id="email" type="email" placeholder="Ví dụ: nam@gmail.com" />
+            </div>
+            <div class="field">
+              <div class="label">Số điện thoại</div>
+              <input id="phone" type="text" placeholder="Ví dụ: 0987xxxxxx" />
+            </div>
+            <button class="btn full" type="submit">
+              <span class="material-symbols-outlined">save</span>Lưu thay đổi
+            </button>
+          </form>
+
+          <div id="uNotice" class="notice" style="display:none; margin-top:12px;"></div>
+
+          <hr />
+
+          <h2>Đổi mật khẩu</h2>
+          <form id="pForm">
+            <div class="field">
+              <div class="label">Mật khẩu hiện tại</div>
+              <div class="pw-wrap">
+                <input id="curPass" type="password" required />
+                <button class="pw-eye" type="button" data-eye="curPass" aria-label="Hiện mật khẩu">
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label">Mật khẩu mới</div>
+              <div class="pw-wrap">
+                <input id="newPass" type="password" placeholder="Tối thiểu 6 ký tự" required />
+                <button class="pw-eye" type="button" data-eye="newPass" aria-label="Hiện mật khẩu">
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+              </div>
+            </div>
+
+            <button class="btn full" type="submit">
+              <span class="material-symbols-outlined">lock_reset</span>Đổi mật khẩu
+            </button>
+          </form>
+
+          <div id="pNotice" class="notice" style="display:none; margin-top:12px;"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="container-sm account-wrap">
-    <div class="card">
-      <div class="card-title brand">ScamCheck</div>
-      <div class="card-subtitle">Thông tin tài khoản</div>
+  <script type="module">
+    import { apiFetch, getUser, requireAuth } from "./js/api.js";
+    if (!requireAuth("./login.html")) {}
 
-      <!-- INFO -->
-      <div class="field">
-        <label>Họ và tên</label>
-        <input class="input" id="fullname" placeholder="VD: Nguyễn Văn A"
-      <div class="field">
-        <label>Tên tài khoản</label>
-        <input class="input" id="username" disabled>
-      </div>
+    const user = getUser();
+    const fullname = document.getElementById("fullname");
+    const email = document.getElementById("email");
+    const phone = document.getElementById("phone");
 
-      <div class="field">
-        <label>Email</label>
-        <input class="input" type="email" id="email" placeholder="example@gmail.com">
-      </div>
+    const uNotice = document.getElementById("uNotice");
+    const pNotice = document.getElementById("pNotice");
 
-      <div class="field">
-        <label>Số điện thoại</label>
-        <input class="input" type="text" id="phone" placeholder="VD: 0987654321">
-      </div>
+    function setNotice(el, type, msg){
+      el.style.display = msg ? "block" : "none";
+      el.className = "notice " + (type || "");
+      el.textContent = msg || "";
+    }
 
-      <div class="field">
-        <label>Quyền</label>
-        <input class="input" id="role" disabled>
-      </div>
+    async function loadMe(){
+      try{
+        const data = await apiFetch("/api/account", { auth:true });
 
-      <button class="btn btn-primary btn-full" onclick="save()">💾 Lưu thay đổi</button>
-      <p id="msg" class="center mt-12" style="font-weight:900;color:var(--success)"></p>
+        fullname.value = data.fullname || "";
+        email.value = data.email || "";
+        phone.value = data.phone || "";
 
-      <hr class="hr">
+        if (user?.role !== "admin") {
+          fullname.disabled = true;
+          fullname.placeholder = "Bạn không thể sửa mục này";
+        } else {
+          fullname.disabled = false;
+          fullname.placeholder = "Nhập họ và tên";
+        }
+      }catch(e){
+        setNotice(uNotice, "err", e.message || "Không tải được thông tin.");
+      }
+    }
 
-      <!-- CHANGE PASSWORD GO TO SEPARATE PAGE -->
-      <button class="btn btn-outline btn-full" onclick="goChangePassword()">🔒 Đổi mật khẩu</button>
+    // toggle eye
+    document.querySelectorAll("[data-eye]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = btn.getAttribute("data-eye");
+        const input = document.getElementById(id);
+        const icon = btn.querySelector(".material-symbols-outlined");
+        if (!input) return;
 
-      <div class="center mt-16">
-        <a href="select.html">← Quay lại</a>
-      </div>
-    </div>
-  </div>
-
-<script>
-  const user = JSON.parse(localStorage.getItem("user") || "null");
-  const token = localStorage.getItem("token");
-
-  if (!user || !token) {
-    location.href = "login.html";
-  }
-
-  function goHome() { location.href = "select.html"; }
-  function about() { alert("ScamCheck - công cụ kiểm tra & báo cáo lừa đảo."); }
-  function logout() {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    location.href = "login.html";
-  }
-
-  function goChangePassword() {
-    location.href = "change-password.html";
-  }
-
-  // Load account info
-  fetch("/api/account", {
-    headers: { "Authorization": "Bearer " + token }
-  })
-  .then(r => {
-    if (r.status === 401) { logout(); return null; }
-    return r.json();
-  })
-  .then(d => {
-    if (!d) return;
-    fullname.value = d.fullname || "";
-    username.value = d.username || "";
-    email.value = d.email || "";
-    phone.value = d.phone || "";
-    role.value = d.role || "";
-
-    fullname.disabled = (d.role !== "admin"); // chỉ admin được sửa họ tên
-  })
-  .catch(() => {
-    msg.style.color = "var(--danger)";
-    msg.innerText = "Không thể tải thông tin tài khoản";
-  });
-
-  // Save email + phone
-  function save() {
-    msg.style.color = "var(--muted)";
-    msg.innerText = "Đang lưu...";
-
-    fetch("/api/account/update", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
-    body: JSON.stringify({
-      email: email.value,
-      phone: phone.value,
-      fullname: fullname.value
-    })
-  })
-    .then(r => {
-      if (r.status === 401) { logout(); return null; }
-      return r.json();
-    })
-    .then(d => {
-      if (!d) return;
-      const ok = (d.message || "").toLowerCase().includes("thành công");
-      msg.style.color = ok ? "var(--success)" : "var(--danger)";
-      msg.innerText = d.message || "Có lỗi xảy ra";
-    })
-    .catch(() => {
-      msg.style.color = "var(--danger)";
-      msg.innerText = "Không thể kết nối server";
+        const isPw = input.type === "password";
+        input.type = isPw ? "text" : "password";
+        if (icon) icon.textContent = isPw ? "visibility_off" : "visibility";
+      });
     });
-  }
-</script>
 
+    document.getElementById("uForm").addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      try{
+        setNotice(uNotice, "", "Đang lưu...");
+        const body = {
+          fullname: fullname.value.trim(),
+          email: email.value.trim(),
+          phone: phone.value.trim()
+        };
+        const data = await apiFetch("/api/account/update", { method:"POST", auth:true, body });
+        setNotice(uNotice, "ok", data.message || "Đã lưu.");
+      }catch(err){
+        setNotice(uNotice, "err", err.message || "Lưu không thành công.");
+      }
+    });
+
+    document.getElementById("pForm").addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      try{
+        setNotice(pNotice, "", "Đang đổi...");
+        const currentPassword = document.getElementById("curPass").value;
+        const newPassword = document.getElementById("newPass").value;
+
+        const data = await apiFetch("/api/account/change-password", {
+          method:"POST",
+          auth:true,
+          body:{ currentPassword, newPassword }
+        });
+
+        setNotice(pNotice, "ok", data.message || "Đổi mật khẩu thành công.");
+        e.target.reset();
+      }catch(err){
+        setNotice(pNotice, "err", err.message || "Đổi mật khẩu không thành công.");
+      }
+    });
+
+    loadMe();
+  </script>
 </body>
 </html>

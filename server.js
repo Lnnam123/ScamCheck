@@ -34,9 +34,11 @@ db.connect((err) => {
    AUTH MIDDLEWARE
 ========================= */
 function authRequired(req, res, next) {
-  const authHeader = req.headers.authorization || "";
+  const authHeader =
+  req.headers.authorization ||
+  (req.cookies && req.cookies.token ? "Bearer " + req.cookies.token : "");
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  if (!token) return res.status(401).json({ message: "Thiếu token" });
+  if (!token) return res.status(401).json({ message: "UNAUTHORIZED" });
 
   try {
     req.user = jwt.verify(token, SECRET_KEY);
@@ -344,24 +346,36 @@ app.get("/api/admin/scam/list", authRequired, adminOnly, (req, res) => {
   const page = Math.max(1, parseInt(req.query.page || "1", 10));
   const pageSize = Math.min(100, Math.max(5, parseInt(req.query.pageSize || "10", 10)));
 
-  const type = (req.query.type || "all").toLowerCase();     // all|phone|link
-  const sort = (req.query.sort || "new").toLowerCase();     // new|old
+  const type = String(req.query.type || "all").toLowerCase();   // all|phone|link
+  const sort = String(req.query.sort || "new").toLowerCase();   // new|old
   const q = String(req.query.q || "").trim();
+
+  // ✅ mới: status filter
+  // all | pending | safe | scam | approved (safe+scam)
+  const status = String(req.query.status || "all").toLowerCase();
 
   const where = [];
   const params = [];
 
-  where.push("status='scam'"); // chỉ list những cái admin đã add (cảnh báo)
-
+  // type filter
   if (type === "phone" || type === "link") {
     where.push("type=?");
     params.push(type);
   }
 
+  // search
   if (q) {
     where.push("(value LIKE ? OR description LIKE ?)");
     params.push(`%${q}%`, `%${q}%`);
   }
+
+  // ✅ status filter
+  if (status === "pending" || status === "safe" || status === "scam") {
+    where.push("status=?");
+    params.push(status);
+  } else if (status === "approved") {
+    where.push("(status='safe' OR status='scam')");
+  } // status=all => không thêm điều kiện
 
   const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
   const orderSql = sort === "old" ? "ORDER BY id ASC" : "ORDER BY id DESC";
@@ -428,8 +442,8 @@ app.post("/api/forgot", (req, res) => {
     const expiresSql = expires.toISOString().slice(0, 19).replace("T", " ");
 
     db.query(
-      "INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES (?, ?, ?)",
-      [user.id, tokenHash, expiresSql],
+      "INSERT INTO password_resets (user_id, token_hash, expires_at, used) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE), 0)",
+      [user.id, tokenHash],
       async (err2) => {
         if (err2) {
           logger.error("FORGOT_INSERT_ERROR", { error: err2.message, userId: user.id, email });
@@ -568,6 +582,10 @@ app.delete("/api/admin/scam/:id", authRequired, adminOnly, (req, res) => {
     if (err) return res.status(500).json({ message: "Xoá thất bại" });
     res.json({ message: "Đã xoá" });
   });
+});
+
+app.get("/", (req, res) => {
+  res.redirect("/login.html");
 });
 
 /* =========================

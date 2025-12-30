@@ -1,541 +1,605 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <title>ScamCheck - Admin</title>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/select.css">
+  <title>ScamCheck • Quản trị</title>
+  <link rel="stylesheet" href="./css/responsive.css" />
+  <link rel="stylesheet" href="./css/app.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
-
-<body class="app-bg admin-page">
-  <!-- TOPBAR -->
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-icon">🛡️</div>
-        <div>
-          <div class="brand-name">ScamCheck Admin</div>
-          <div class="brand-sub">Quản trị hệ thống</div>
+<body>
+  <div class="page">
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo"></div>
+          <div class="brand-title">
+            <b>ScamCheck</b>
+            <span>Quản trị</span>
+          </div>
+        </div>
+        <div class="nav-actions">
+          <a class="btn secondary" href="./select.html">
+            <span class="material-symbols-outlined">arrow_back</span>Quay lại
+          </a>
         </div>
       </div>
 
-      <nav class="nav">
-        <button class="nav-pill" onclick="goHome()">Trang chính</button>
-        <button class="nav-pill" onclick="location.href='admin-scam.html'">Danh sách cảnh báo</button>
-        <button class="nav-pill danger" onclick="logout()">Đăng xuất</button>
-      </nav>
-    </div>
-  </header>
-
-  <main class="shell">
-    <section class="hero" style="grid-template-columns:1fr; gap:14px;">
-      <div class="hero-left">
-        <h1 class="headline" style="font-size:40px;">
-          Bảng điều khiển <span class="grad">Admin</span>
-        </h1>
-        <p class="sub">Sửa thông tin user, thêm cảnh báo trực tiếp và xem thống kê Phone/Link.</p>
-
-        <!-- GRID 2 CARDS -->
-        <div class="admin-grid">
-          <!-- CARD: ADD SCAM + CHART -->
-          <div class="glass-card">
-            <div class="gc-top">
-              <div class="gc-title">Thêm cảnh báo trực tiếp</div>
-              <div class="gc-sub">Admin thêm số điện thoại / link vào danh sách “scam”.</div>
+      <!-- Menu đầu trang -->
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-body">
+          <div class="row" style="justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <div class="row" style="gap:10px; flex-wrap:wrap;">
+              <button class="btn secondary" type="button" data-tab="users">
+                <span class="material-symbols-outlined">group</span>Người dùng
+              </button>
+              <button class="btn secondary" type="button" data-tab="reports">
+                <span class="material-symbols-outlined">assignment</span>Báo cáo
+              </button>
+              <button class="btn secondary" type="button" data-tab="list">
+                <span class="material-symbols-outlined">warning</span>Danh sách
+              </button>
+              <button class="btn secondary" type="button" data-tab="stats">
+                <span class="material-symbols-outlined">monitoring</span>Thống kê
+              </button>
             </div>
 
-            <div class="gc-actions" style="gap:12px;">
-              <div class="form-row">
-                <div class="fcol">
-                  <label class="flabel">Loại</label>
-                  <select class="finput" id="scamType">
+            <button class="btn secondary" type="button" id="btnReloadAll">
+              <span class="material-symbols-outlined">refresh</span>Tải lại
+            </button>
+          </div>
+
+          <div id="notice" class="notice" style="display:none; margin-top:12px;"></div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div id="tab-users" class="card">
+        <div class="card-body">
+          <div class="spread">
+            <div>
+              <h2>Người dùng</h2>
+              <p>Xem và cập nhật thông tin người dùng.</p>
+            </div>
+            <button class="btn secondary" type="button" id="reloadUsers">
+              <span class="material-symbols-outlined">refresh</span>Tải lại
+            </button>
+          </div>
+
+          <div class="table-wrap" style="margin-top:12px;">
+            <table class="responsive-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Tên đăng nhập</th>
+                  <th>Họ và tên</th>
+                  <th>Email</th>
+                  <th>Số điện thoại</th>
+                  <th>Quyền</th>
+                  <th>Lưu</th>
+                </tr>
+              </thead>
+              <tbody id="usersTbody">
+                <tr><td colspan="7" style="color:var(--muted);">Chưa có dữ liệu</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div id="tab-reports" class="card" style="display:none;">
+        <div class="card-body">
+          <div class="spread">
+            <div>
+              <h2>Báo cáo</h2>
+              <p>Duyệt báo cáo để cập nhật kết quả.</p>
+            </div>
+            <button class="btn secondary" type="button" id="reloadReports">
+              <span class="material-symbols-outlined">refresh</span>Tải lại
+            </button>
+          </div>
+
+          <div class="table-wrap" style="margin-top:12px;">
+            <table class="responsive-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Loại</th>
+                  <th>Nội dung</th>
+                  <th>Mô tả</th>
+                  <th>Trạng thái</th>
+                  <th>Cập nhật</th>
+                </tr>
+              </thead>
+              <tbody id="reportsTbody">
+                <tr><td colspan="6" style="color:var(--muted);">Chưa có dữ liệu</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIST -->
+      <div id="tab-list" class="card" style="display:none;">
+        <div class="card-body">
+          <div class="spread">
+            <div>
+              <h2>Danh sách hiện có</h2>
+              <p>Bấm “Thêm cảnh báo” hoặc “Lọc”. Khi mở 1 mục, giao diện sẽ tự giãn full.</p>
+            </div>
+            <button class="btn secondary" type="button" id="reloadList">
+              <span class="material-symbols-outlined">refresh</span>Tải lại
+            </button>
+          </div>
+
+          <!-- nút điều khiển -->
+          <div class="row" style="margin-top:10px; gap:10px; flex-wrap:wrap;">
+            <button class="btn secondary" type="button" id="btnShowAdd">
+              <span class="material-symbols-outlined">add</span>Thêm cảnh báo
+            </button>
+            <button class="btn secondary" type="button" id="btnShowFilter">
+              <span class="material-symbols-outlined">tune</span>Lọc
+            </button>
+            <button class="btn secondary" type="button" id="btnShowBoth">
+              <span class="material-symbols-outlined">view_column</span>Xem cả hai
+            </button>
+          </div>
+
+          <!-- ✅ Grid auto full -->
+          <div id="listGrid" class="full-grid" style="margin-top:12px;">
+            <!-- Panel Add -->
+            <div id="panelAdd" class="card panel-card" style="background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12);">
+              <div class="card-body">
+                <h2 style="margin-bottom:6px;">Thêm cảnh báo ngay</h2>
+                <p>Thêm mục lừa đảo (không cần chờ duyệt).</p>
+
+                <form id="addForm" style="margin-top:10px;">
+                  <div class="field">
+                    <div class="label">Loại</div>
+                    <select id="addType">
+                      <option value="phone">Số điện thoại</option>
+                      <option value="link">Đường link</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <div class="label">Nội dung</div>
+                    <input id="addValue" type="text" placeholder="Nhập số / link..." required />
+                  </div>
+
+                  <div class="field">
+                    <div class="label">Ghi chú (tuỳ chọn)</div>
+                    <input id="addDesc" type="text" placeholder="Ví dụ: giả danh ngân hàng..." />
+                  </div>
+
+                  <button class="btn full" type="submit" id="btnAdd">
+                    <span class="material-symbols-outlined">add</span>Thêm
+                  </button>
+                </form>
+
+                <div id="addNotice" class="notice" style="display:none; margin-top:12px;"></div>
+              </div>
+            </div>
+
+            <!-- Panel Filter/List -->
+            <div id="panelFilter" class="card panel-card" style="background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12);">
+              <div class="card-body">
+                <div class="spread">
+                  <div>
+                    <h2 style="margin-bottom:6px;">Lọc & tìm kiếm</h2>
+                    <p style="margin:0;">Tìm theo nội dung hoặc ghi chú. Có phân loại chờ duyệt/đã duyệt.</p>
+                  </div>
+                </div>
+
+                <div class="row" style="margin-top:10px; flex-wrap:wrap;">
+                  <select id="filterType" style="min-width: 190px;">
+                    <option value="all">Tất cả</option>
                     <option value="phone">Số điện thoại</option>
                     <option value="link">Đường link</option>
                   </select>
+
+                  <select id="filterStatus" style="min-width: 190px;">
+                    <option value="all">Tất cả</option>
+                    <option value="pending">Chờ duyệt</option>
+                    <option value="approved">Đã duyệt</option>
+                  </select>
+
+                  <select id="sort" style="min-width: 160px;">
+                    <option value="new">Mới nhất</option>
+                    <option value="old">Cũ nhất</option>
+                  </select>
                 </div>
-                <div class="fcol">
-                  <label class="flabel">Giá trị</label>
-                  <input class="finput" id="scamValue" placeholder="VD: 0987654321 hoặc https://abc.com">
+
+                <div class="row" style="margin-top:10px; gap:10px; flex-wrap:wrap;">
+                  <input id="q" type="text" placeholder="Tìm theo nội dung hoặc ghi chú..." style="flex:1; min-width:240px;" />
+                  <button class="btn secondary" type="button" id="searchBtn">
+                    <span class="material-symbols-outlined">search</span>Tìm
+                  </button>
                 </div>
+
+                <div class="table-wrap" style="margin-top:12px;">
+                  <table class="responsive-table">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Loại</th>
+                        <th>Nội dung</th>
+                        <th>Ghi chú</th>
+                        <th>Trạng thái</th>
+                        <th>Thời gian</th>
+                        <th>Xóa</th>
+                      </tr>
+                    </thead>
+                    <tbody id="listTbody">
+                      <tr><td colspan="7" style="color:var(--muted);">Chưa có dữ liệu</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="row" style="margin-top:10px; gap:10px; flex-wrap:wrap;">
+                  <button class="btn secondary" type="button" id="prevPage">
+                    <span class="material-symbols-outlined">chevron_left</span>Trang trước
+                  </button>
+                  <span class="badge" id="pageInfo">Trang 1</span>
+                  <button class="btn secondary" type="button" id="nextPage">
+                    Trang sau<span class="material-symbols-outlined">chevron_right</span>
+                  </button>
+                </div>
+
               </div>
-
-              <div class="fcol">
-                <label class="flabel">Mô tả (tuỳ chọn)</label>
-                <textarea class="finput" id="scamDesc" rows="3" placeholder="Mô tả ngắn: giả mạo ngân hàng, dụ OTP..."></textarea>
-              </div>
-
-              <div class="btn-row">
-                <button class="btnx btnx-primary" onclick="addScam()">+ Thêm</button>
-                <button class="btnx btnx-ghost" onclick="clearScamForm()">Làm mới</button>
-              </div>
-
-              <div id="addMsg" class="note"></div>
-            </div>
-
-            <div class="gc-foot" style="justify-content:space-between;">
-              <span>📊 Thống kê cảnh báo (status = scam)</span>
-              <span class="gc-pill" id="countBadge">Phone 0 • Link 0</span>
-            </div>
-
-            <div class="chart-wrap">
-              <canvas id="typeChart" width="520" height="220" aria-label="Bar chart"></canvas>
-            </div>
-          </div>
-
-          <!-- CARD: USER MANAGEMENT -->
-          <div class="glass-card">
-            <div class="gc-top">
-              <div class="gc-title">Quản lý người dùng</div>
-              <div class="gc-sub">Sửa họ tên / email / phone / role.</div>
-            </div>
-
-            <div class="table-wrap">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Họ tên</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Role</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody id="userTable"></tbody>
-              </table>
-            </div>
-
-            <div class="gc-foot">
-              <span>🧩 Tip: Nhấn “Sửa” để mở popup</span>
-              <span class="gc-pill">Admin tools</span>
             </div>
           </div>
         </div>
       </div>
-    </section>
-  </main>
 
-  <!-- MODAL EDIT USER -->
-  <div class="modal" id="editModal" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-head">
-        <div>
-          <div class="modal-title">Chỉnh sửa người dùng</div>
-          <div class="modal-sub">Cập nhật họ tên / email / phone / role</div>
+      <!-- STATS -->
+      <div id="tab-stats" class="card" style="display:none;">
+        <div class="card-body">
+          <div class="spread">
+            <div>
+              <h2>Thống kê</h2>
+              <p>Chỉ hiển thị số lượng cảnh báo đã xác nhận.</p>
+            </div>
+            <button class="btn secondary" type="button" id="reloadStats">
+              <span class="material-symbols-outlined">refresh</span>Tải lại
+            </button>
+          </div>
+
+          <div class="grid cols-2" style="margin-top:12px;">
+            <div class="card" style="background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12);">
+              <div class="card-body">
+                <div class="badge">📞 Số điện thoại</div>
+                <h1 id="cPhone" style="margin-top:10px;">0</h1>
+              </div>
+            </div>
+
+            <div class="card" style="background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12);">
+              <div class="card-body">
+                <div class="badge">🔗 Đường link</div>
+                <h1 id="cLink" style="margin-top:10px;">0</h1>
+              </div>
+            </div>
+          </div>
+
         </div>
-        <button class="icon-btn" onclick="closeModal()" aria-label="Đóng">✕</button>
       </div>
 
-      <input type="hidden" id="editId">
-
-      <label class="flabel">Họ và tên</label>
-      <input class="finput" id="editFullname" placeholder="VD: Lê Nam">
-
-      <label class="flabel">Email</label>
-      <input class="finput" id="editEmail" placeholder="example@gmail.com">
-
-      <label class="flabel">Số điện thoại</label>
-      <input class="finput" id="editPhone" placeholder="0987654321">
-
-      <label class="flabel">Quyền</label>
-      <select class="finput" id="editRole">
-        <option value="user">User</option>
-        <option value="admin">Admin</option>
-      </select>
-
-      <div class="btn-row" style="margin-top:14px;">
-        <button class="btnx btnx-primary" onclick="saveUser()">Lưu</button>
-        <button class="btnx btnx-ghost" onclick="closeModal()">Huỷ</button>
-      </div>
     </div>
   </div>
 
-<script>
-  const token = localStorage.getItem("token");
-  const me = JSON.parse(localStorage.getItem("user") || "null");
-  if (!me || !token || me.role !== "admin") location.href = "login.html";
+  <script type="module">
+    import { apiFetch, requireAuth, requireAdmin } from "./js/api.js";
+    if (!requireAuth("./login.html")) {}
+    if (!requireAdmin("./select.html")) {}
 
-  // ---------- NAV ----------
-  function goHome(){ location.href="select.html"; }
-  function logout(){ localStorage.clear(); location.href="login.html"; }
+    const notice = document.getElementById("notice");
+    function setNotice(type, msg){
+      notice.style.display = msg ? "block" : "none";
+      notice.className = "notice " + (type || "");
+      notice.textContent = msg || "";
+    }
 
-  // ---------- USERS ----------
-  const table = document.getElementById("userTable");
-  const modal = document.getElementById("editModal");
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+    function escapeAttr(s){ return escapeHtml(s).replace(/"/g,"&quot;"); }
+    function typeNice(t){ return t === "phone" ? "Số điện thoại" : (t === "link" ? "Đường link" : (t||"")); }
+    function statusNice(s){
+      if (s === "pending") return "Chờ duyệt";
+      if (s === "safe") return "Đã duyệt (an toàn)";
+      if (s === "scam") return "Đã duyệt (lừa đảo)";
+      return "Chờ duyệt";
+    }
 
-  function fetchUsers(){
-    fetch("/api/admin/users", { headers:{ Authorization:"Bearer " + token } })
-      .then(r=>r.json())
-      .then(list=>{
-        table.innerHTML = "";
-        (list || []).forEach(u=>{
-          table.insertAdjacentHTML("beforeend", `
-            <tr>
-              <td>${u.id}</td>
-              <td>${escapeHtml(u.username || "")}</td>
-              <td>${escapeHtml(u.fullname || "")}</td>
-              <td>${escapeHtml(u.email || "")}</td>
-              <td>${escapeHtml(u.phone || "")}</td>
-              <td><span class="role-pill ${u.role === "admin" ? "r-admin" : "r-user"}">${u.role}</span></td>
-              <td class="td-actions">
-                <button class="btn-mini" onclick='openEdit(${JSON.stringify(u).replace(/</g,"\\u003c")})'>Sửa</button>
-              </td>
-            </tr>
-          `);
+    // Tabs
+    function showTab(name){
+      ["users","reports","list","stats"].forEach(t=>{
+        document.getElementById("tab-"+t).style.display = (t===name) ? "block" : "none";
+      });
+      setNotice("", "");
+    }
+    document.querySelectorAll("[data-tab]").forEach(btn=>{
+      btn.addEventListener("click", ()=> showTab(btn.getAttribute("data-tab")));
+    });
+
+    document.getElementById("btnReloadAll").addEventListener("click", async ()=>{
+      const visible = ["users","reports","list","stats"].find(t => document.getElementById("tab-"+t).style.display !== "none") || "users";
+      if (visible === "users") await loadUsers();
+      if (visible === "reports") await loadReports();
+      if (visible === "list") await loadList();
+      if (visible === "stats") await loadStats();
+    });
+
+    // ===== LIST FULL GRID TOGGLE =====
+    const listGrid = document.getElementById("listGrid");
+    const panelAdd = document.getElementById("panelAdd");
+    const panelFilter = document.getElementById("panelFilter");
+    const btnShowAdd = document.getElementById("btnShowAdd");
+    const btnShowFilter = document.getElementById("btnShowFilter");
+    const btnShowBoth = document.getElementById("btnShowBoth");
+
+    function setListMode(mode){
+      // mode: add | filter | both
+      if (mode === "both"){
+        listGrid.classList.add("two");
+        panelAdd.style.display = "block";
+        panelFilter.style.display = "block";
+        return;
+      }
+      listGrid.classList.remove("two");
+      panelAdd.style.display = (mode === "add") ? "block" : "none";
+      panelFilter.style.display = (mode === "filter") ? "block" : "none";
+    }
+
+    btnShowAdd.addEventListener("click", ()=> setListMode("add"));
+    btnShowFilter.addEventListener("click", ()=> setListMode("filter"));
+    btnShowBoth.addEventListener("click", ()=> setListMode("both"));
+
+    // mặc định: mở lọc (full)
+    setListMode("filter");
+
+    // ===== USERS =====
+    const usersTbody = document.getElementById("usersTbody");
+    async function loadUsers(){
+      try{
+        setNotice("", "Đang tải người dùng...");
+        const rows = await apiFetch("/api/admin/users", { auth:true });
+
+        usersTbody.innerHTML = (rows||[]).length ? (rows||[]).map(u => `
+          <tr>
+            <td>${u.id}</td>
+            <td>${escapeHtml(u.username||"")}</td>
+            <td><input class="u-full" data-id="${u.id}" value="${escapeAttr(u.fullname||"")}" /></td>
+            <td><input class="u-email" data-id="${u.id}" value="${escapeAttr(u.email||"")}" /></td>
+            <td><input class="u-phone" data-id="${u.id}" value="${escapeAttr(u.phone||"")}" /></td>
+            <td>
+              <select class="u-role" data-id="${u.id}">
+                <option value="user" ${u.role==="user"?"selected":""}>Người dùng</option>
+                <option value="admin" ${u.role==="admin"?"selected":""}>Quản trị</option>
+              </select>
+            </td>
+            <td><button class="btn secondary" type="button" data-save="${u.id}"><span class="material-symbols-outlined">save</span>Lưu</button></td>
+          </tr>
+        `).join("") : '<tr><td colspan="7" style="color:var(--muted);">Chưa có dữ liệu</td></tr>';
+
+        usersTbody.querySelectorAll("input,select").forEach(el=>{
+          el.style.width="100%";
+          el.style.padding="10px 10px";
+          el.style.borderRadius="10px";
+          el.style.background="rgba(255,255,255,.06)";
+          el.style.border="1px solid rgba(255,255,255,.14)";
+          el.style.color="inherit";
+          el.style.outline="none";
         });
+
+        usersTbody.querySelectorAll("[data-save]").forEach(btn=>{
+          btn.addEventListener("click", ()=> saveUser(Number(btn.getAttribute("data-save"))));
+        });
+
+        setNotice("ok", "Đã tải xong.");
+      }catch(e){
+        setNotice("err", e.message || "Không tải được.");
+      }
+    }
+    async function saveUser(id){
+      try{
+        const fullname = document.querySelector(`.u-full[data-id="${id}"]`)?.value?.trim() || "";
+        const email = document.querySelector(`.u-email[data-id="${id}"]`)?.value?.trim() || "";
+        const phone = document.querySelector(`.u-phone[data-id="${id}"]`)?.value?.trim() || "";
+        const role = document.querySelector(`.u-role[data-id="${id}"]`)?.value || "user";
+
+        setNotice("", "Đang lưu...");
+        const data = await apiFetch("/api/admin/user/update", { method:"POST", auth:true, body:{ id, fullname, email, phone, role } });
+        setNotice("ok", data.message || "Đã lưu.");
+      }catch(e){
+        setNotice("err", e.message || "Lưu không thành công.");
+      }
+    }
+    document.getElementById("reloadUsers").addEventListener("click", loadUsers);
+
+    // ===== REPORTS =====
+    const reportsTbody = document.getElementById("reportsTbody");
+    async function loadReports(){
+      try{
+        setNotice("", "Đang tải báo cáo...");
+        const rows = await apiFetch("/api/admin/reports", { auth:true });
+
+        reportsTbody.innerHTML = (rows||[]).length ? (rows||[]).map(r=>`
+          <tr>
+            <td>${r.id}</td>
+            <td>${typeNice(r.type)}</td>
+            <td>${escapeHtml(r.value||"")}</td>
+            <td>${escapeHtml(r.description||"")}</td>
+            <td><span class="badge">${statusNice(r.status||"pending")}</span></td>
+            <td>
+              <select class="rep-status" data-id="${r.id}">
+                <option value="pending">Chờ duyệt</option>
+                <option value="safe">Đã duyệt (an toàn)</option>
+                <option value="scam">Đã duyệt (lừa đảo)</option>
+              </select>
+              <button class="btn secondary" type="button" data-up="${r.id}"><span class="material-symbols-outlined">done</span>OK</button>
+            </td>
+          </tr>
+        `).join("") : '<tr><td colspan="6" style="color:var(--muted);">Chưa có dữ liệu</td></tr>';
+
+        reportsTbody.querySelectorAll("select").forEach(el=>{
+          el.style.width="100%";
+          el.style.padding="10px 10px";
+          el.style.borderRadius="10px";
+          el.style.background="rgba(255,255,255,.06)";
+          el.style.border="1px solid rgba(255,255,255,.14)";
+          el.style.color="inherit";
+          el.style.outline="none";
+        });
+
+        (rows||[]).forEach(r=>{
+          const sel = document.querySelector(`.rep-status[data-id="${r.id}"]`);
+          if (sel) sel.value = (r.status || "pending");
+        });
+
+        reportsTbody.querySelectorAll("[data-up]").forEach(btn=>{
+          btn.addEventListener("click", ()=> updateReport(Number(btn.getAttribute("data-up"))));
+        });
+
+        setNotice("ok", "Đã tải xong.");
+      }catch(e){
+        setNotice("err", e.message || "Không tải được.");
+      }
+    }
+    async function updateReport(id){
+      try{
+        const status = document.querySelector(`.rep-status[data-id="${id}"]`)?.value || "pending";
+        setNotice("", "Đang cập nhật...");
+        await apiFetch("/api/admin/update", { method:"POST", auth:true, body:{ id, status } });
+        setNotice("ok", "Đã cập nhật.");
+        await loadReports();
+        await loadList();
+        await loadStats();
+      }catch(e){
+        setNotice("err", e.message || "Cập nhật không thành công.");
+      }
+    }
+    document.getElementById("reloadReports").addEventListener("click", loadReports);
+
+    // ===== LIST =====
+    let page = 1;
+    const pageSize = 10;
+    const listTbody = document.getElementById("listTbody");
+    const pageInfo = document.getElementById("pageInfo");
+
+    function buildListQuery(){
+      const type = document.getElementById("filterType").value;
+      const sort = document.getElementById("sort").value;
+      const q = document.getElementById("q").value.trim();
+      const status = document.getElementById("filterStatus").value;
+
+      const params = new URLSearchParams({
+        page: String(page),
+        pageSize: String(pageSize),
+        type, sort, q, status
       });
-  }
-
-  function openEdit(u){
-    document.getElementById("editId").value = u.id;
-    document.getElementById("editFullname").value = u.fullname || "";
-    document.getElementById("editEmail").value = u.email || "";
-    document.getElementById("editPhone").value = u.phone || "";
-    document.getElementById("editRole").value = u.role || "user";
-    modal.style.display = "flex";
-  }
-
-  function closeModal(){ modal.style.display = "none"; }
-
-  function saveUser(){
-    const id = document.getElementById("editId").value;
-    const fullname = document.getElementById("editFullname").value.trim();
-    const email = document.getElementById("editEmail").value.trim();
-    const phone = document.getElementById("editPhone").value.trim();
-    const role = document.getElementById("editRole").value;
-
-    fetch("/api/admin/user/update", {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        Authorization:"Bearer " + token
-      },
-      body: JSON.stringify({ id, fullname, email, phone, role })
-    })
-    .then(r=>r.json())
-    .then(d=>{
-      alert(d.message || "Xong");
-      closeModal();
-      fetchUsers();
-    });
-  }
-
-  // ---------- ADD SCAM ----------
-  const scamType = document.getElementById("scamType");
-  const scamValue = document.getElementById("scamValue");
-  const scamDesc = document.getElementById("scamDesc");
-  const addMsg = document.getElementById("addMsg");
-
-  function clearScamForm(){
-    scamType.value = "phone";
-    scamValue.value = "";
-    scamDesc.value = "";
-    addMsg.textContent = "";
-    scamValue.focus();
-  }
-
-  function validatePhone(v){ return /^[0-9]{9,12}$/.test(String(v||"").trim()); }
-  function validateUrl(v){
-    try{
-      const u = new URL(String(v||"").trim());
-      return u.protocol === "http:" || u.protocol === "https:";
-    }catch{ return false; }
-  }
-
-  function addScam(){
-    addMsg.textContent = "";
-    const type = scamType.value;
-    const value = scamValue.value.trim();
-    const description = scamDesc.value.trim();
-
-    if (!value){
-      addMsg.textContent = "⚠️ Vui lòng nhập giá trị.";
-      return;
-    }
-    if (type === "phone" && !validatePhone(value)){
-      addMsg.textContent = "⚠️ Số điện thoại không hợp lệ (9–12 chữ số).";
-      return;
-    }
-    if (type === "link" && !validateUrl(value)){
-      addMsg.textContent = "⚠️ Link không hợp lệ (http/https).";
-      return;
+      return "/api/admin/scam/list?" + params.toString();
     }
 
-    addMsg.textContent = "Đang thêm...";
-    fetch("/api/admin/scam/add", {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        Authorization:"Bearer " + token
-      },
-      body: JSON.stringify({ type, value, description })
-    })
-    .then(r=>r.json())
-    .then(d=>{
-      addMsg.textContent = d.message || "Xong";
-      scamValue.value = "";
-      scamDesc.value = "";
-      refreshTypeCounts(); // update chart
-    })
-    .catch(()=> addMsg.textContent = "❌ Lỗi kết nối server");
-  }
+    async function loadList(){
+      try{
+        setNotice("", "Đang tải danh sách...");
+        const data = await apiFetch(buildListQuery(), { auth:true });
 
-  // ---------- BAR CHART (Phone vs Link) ----------
-  const canvas = document.getElementById("typeChart");
-  const ctx = canvas.getContext("2d");
-  const countBadge = document.getElementById("countBadge");
+        const items = data.items || [];
+        listTbody.innerHTML = items.length ? items.map(it=>`
+          <tr>
+            <td>${it.id}</td>
+            <td>${typeNice(it.type)}</td>
+            <td>${escapeHtml(it.value||"")}</td>
+            <td>${escapeHtml(it.description||"")}</td>
+            <td><span class="badge">${statusNice(it.status||"pending")}</span></td>
+            <td>${escapeHtml(it.created_at||"")}</td>
+            <td><button class="btn danger" type="button" data-del="${it.id}"><span class="material-symbols-outlined">delete</span>Xóa</button></td>
+          </tr>
+        `).join("") : '<tr><td colspan="7" style="color:var(--muted);">Chưa có dữ liệu</td></tr>';
 
-  function refreshTypeCounts(){
-    fetch("/api/admin/type-counts", { headers:{ Authorization:"Bearer " + token } })
-      .then(r=>r.json())
-      .then(d=>{
-        const phone = Number(d.phone || 0);
-        const link = Number(d.link || 0);
-        countBadge.textContent = `Phone ${phone} • Link ${link}`;
-        drawBarChart(phone, link);
-      });
-  }
+        listTbody.querySelectorAll("[data-del]").forEach(btn=>{
+          btn.addEventListener("click", ()=> delItem(Number(btn.getAttribute("data-del"))));
+        });
 
-  function drawBarChart(phone, link){
-    const W = canvas.width, H = canvas.height;
-    ctx.clearRect(0,0,W,H);
+        pageInfo.textContent = `Trang ${data.page} / ${data.totalPages} • Tổng: ${data.total}`;
+        setNotice("ok", "Đã tải xong.");
+      }catch(e){
+        setNotice("err", e.message || "Không tải được.");
+      }
+    }
 
-    // background
-    ctx.fillStyle = "rgba(255,255,255,.60)";
-    roundRect(ctx, 10, 10, W-20, H-20, 16);
-    ctx.fill();
+    async function delItem(id){
+      try{
+        setNotice("", "Đang xóa...");
+        await apiFetch(`/api/admin/scam/${id}`, { method:"DELETE", auth:true });
+        setNotice("ok", "Đã xóa.");
+        await loadList();
+        await loadStats();
+      }catch(e){
+        setNotice("err", e.message || "Xóa không thành công.");
+      }
+    }
 
-    const max = Math.max(1, phone, link);
-    const chartLeft = 60, chartRight = W - 30;
-    const chartTop = 30, chartBottom = H - 50;
-    const chartW = chartRight - chartLeft;
-    const chartH = chartBottom - chartTop;
+    document.getElementById("reloadList").addEventListener("click", ()=>{ page=1; loadList(); });
+    document.getElementById("searchBtn").addEventListener("click", ()=>{ page=1; loadList(); });
+    document.getElementById("prevPage").addEventListener("click", ()=>{ page=Math.max(1,page-1); loadList(); });
+    document.getElementById("nextPage").addEventListener("click", ()=>{ page=page+1; loadList(); });
 
-    // axes
-    ctx.strokeStyle = "rgba(15,23,42,.10)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(chartLeft, chartTop);
-    ctx.lineTo(chartLeft, chartBottom);
-    ctx.lineTo(chartRight, chartBottom);
-    ctx.stroke();
+    // ===== ADD =====
+    const addNotice = document.getElementById("addNotice");
+    function setAdd(type, msg){
+      addNotice.style.display = msg ? "block" : "none";
+      addNotice.className = "notice " + (type || "");
+      addNotice.textContent = msg || "";
+    }
 
-    const bars = [
-      { label:"Phone", value:phone, x: chartLeft + chartW*0.25 },
-      { label:"Link", value:link, x: chartLeft + chartW*0.70 }
-    ];
+    document.getElementById("addForm").addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const btnAdd = document.getElementById("btnAdd");
+      btnAdd.disabled = true;
 
-    const barW = Math.min(90, chartW * 0.22);
+      try{
+        const type = document.getElementById("addType").value;
+        const value = document.getElementById("addValue").value.trim();
+        const description = document.getElementById("addDesc").value.trim();
 
-    bars.forEach((b,i)=>{
-      const h = Math.round((b.value / max) * (chartH - 10));
-      const x = b.x - barW/2;
-      const y = chartBottom - h;
+        const data = await apiFetch("/api/admin/scam/add", { method:"POST", auth:true, body:{ type, value, description } });
+        setAdd("ok", data.message || "Đã thêm.");
 
-      // bar fill (không set màu “cứng” kiểu neon; dùng rgba nhẹ)
-      ctx.fillStyle = i===0 ? "rgba(79,70,229,.65)" : "rgba(16,185,129,.55)";
-      roundRect(ctx, x, y, barW, h, 14);
-      ctx.fill();
-
-      // value text
-      ctx.fillStyle = "rgba(15,23,42,.80)";
-      ctx.font = "800 13px Inter, system-ui";
-      ctx.textAlign = "center";
-      ctx.fillText(String(b.value), b.x, y - 10);
-
-      // label
-      ctx.fillStyle = "rgba(100,116,139,.95)";
-      ctx.font = "800 12px Inter, system-ui";
-      ctx.fillText(b.label, b.x, chartBottom + 26);
+        e.target.reset();
+        page = 1;
+        await loadList();
+        await loadStats();
+      }catch(err){
+        setAdd("err", err.message || "Thêm không thành công.");
+      }finally{
+        btnAdd.disabled = false;
+      }
     });
 
-    // title
-    ctx.fillStyle = "rgba(15,23,42,.78)";
-    ctx.font = "900 13px Inter, system-ui";
-    ctx.textAlign = "left";
-    ctx.fillText("Số lượng cảnh báo theo loại", 22, 28);
-  }
+    // ===== STATS =====
+    async function loadStats(){
+      try{
+        setNotice("", "Đang tải thống kê...");
+        const counts = await apiFetch("/api/admin/type-counts", { auth:true });
+        document.getElementById("cPhone").textContent = counts.phone ?? 0;
+        document.getElementById("cLink").textContent = counts.link ?? 0;
+        setNotice("ok", "Đã tải xong.");
+      }catch(e){
+        setNotice("err", e.message || "Không tải được.");
+      }
+    }
+    document.getElementById("reloadStats").addEventListener("click", loadStats);
 
-  function roundRect(c, x, y, w, h, r){
-    const rr = Math.min(r, w/2, h/2);
-    c.beginPath();
-    c.moveTo(x+rr, y);
-    c.arcTo(x+w, y, x+w, y+h, rr);
-    c.arcTo(x+w, y+h, x, y+h, rr);
-    c.arcTo(x, y+h, x, y, rr);
-    c.arcTo(x, y, x+w, y, rr);
-    c.closePath();
-  }
-
-  function escapeHtml(s){
-    return String(s||"").replace(/[&<>"']/g, m => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
-
-  // init
-  fetchUsers();
-  refreshTypeCounts();
-
-  // close modal when click outside
-  modal.addEventListener("click", (e)=>{ if(e.target === modal) closeModal(); });
-</script>
-
-<style>
-/* ===== Admin layout grid ===== */
-.admin-grid{
-  margin-top: 18px;
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-/* Table wrap */
-.table-wrap{ padding: 0 14px 14px; overflow:auto; }
-.admin-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:13.5px;
-}
-.admin-table th,
-.admin-table td{
-  padding: 10px 10px;
-  border-bottom: 1px solid rgba(15,23,42,.08);
-  text-align:left;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-.admin-table th{
-  font-weight: 950;
-  background: rgba(255,255,255,.58);
-}
-.admin-table tr:hover{ background: rgba(79,70,229,.06); }
-
-.td-actions{ text-align:right; }
-
-/* Fix button trong table: gọn, đẹp, không “bự” */
-.btn-mini{
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(15,23,42,.12);
-  background: rgba(255,255,255,.78);
-  font-weight: 950;
-  cursor:pointer;
-}
-.btn-mini:hover{ background: rgba(255,255,255,.95); }
-
-/* Role pills */
-.role-pill{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 950;
-  font-size: 12px;
-  border: 1px solid rgba(15,23,42,.10);
-}
-.role-pill.r-admin{
-  color: rgba(239,68,68,.92);
-  background: rgba(239,68,68,.08);
-  border-color: rgba(239,68,68,.18);
-}
-.role-pill.r-user{
-  color: rgba(79,70,229,.95);
-  background: rgba(79,70,229,.08);
-  border-color: rgba(79,70,229,.18);
-}
-
-/* Form controls (admin card) */
-.form-row{ display:grid; grid-template-columns: 160px 1fr; gap: 12px; }
-.fcol{ display:flex; flex-direction:column; gap: 8px; }
-.flabel{
-  font-size: 12.5px;
-  font-weight: 950;
-  color: rgba(15,23,42,.78);
-}
-.finput{
-  width: 100%;
-  border-radius: 16px;
-  border: 1px solid rgba(15,23,42,.14);
-  background: rgba(255,255,255,.86);
-  padding: 10px 12px;
-  outline:none;
-  font-family: Inter, system-ui;
-}
-.finput:focus{
-  border-color: rgba(79,70,229,.45);
-  box-shadow: 0 0 0 4px rgba(79,70,229,.14);
-}
-
-.btn-row{ display:flex; gap: 10px; }
-
-/* Note */
-.note{
-  font-weight: 850;
-  color: rgba(15,23,42,.70);
-  font-size: 13px;
-  min-height: 18px;
-}
-
-/* Chart wrap */
-.chart-wrap{
-  padding: 0 14px 16px;
-}
-
-/* Modal */
-.modal{
-  position:fixed;
-  inset:0;
-  background: rgba(2,6,23,.45);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index: 40;
-}
-.modal-card{
-  width: 420px;
-  max-width: calc(100vw - 26px);
-  background: rgba(255,255,255,.95);
-  border-radius: 18px;
-  padding: 16px;
-  box-shadow: 0 30px 70px rgba(0,0,0,.28);
-  border: 1px solid rgba(15,23,42,.10);
-}
-.modal-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-.modal-title{ font-weight: 950; font-size: 16px; }
-.modal-sub{ margin-top:4px; font-size: 12.5px; color: rgba(100,116,139,.95); font-weight: 700; }
-.icon-btn{
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.75);
-  cursor:pointer;
-  font-weight: 950;
-}
-.icon-btn:hover{ background: rgba(255,255,255,.95); }
-
-/* Responsive */
-@media (max-width: 980px){
-  .admin-grid{ grid-template-columns: 1fr; }
-  .form-row{ grid-template-columns: 1fr; }
-}
-</style>
-
+    // Init
+    showTab("users");
+    loadUsers();
+  </script>
 </body>
 </html>

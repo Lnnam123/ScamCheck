@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScamCheck • Gửi báo cáo</title>
+  <link rel="stylesheet" href="./css/responsive.css" />
+  <link rel="stylesheet" href="./css/app.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo"></div>
+          <div class="brand-title">
+            <b>ScamCheck</b>
+            <span>Gửi báo cáo</span>
+          </div>
+        </div>
+        <div class="nav-actions">
+          <a class="btn secondary" href="./select.html">
+            <span class="material-symbols-outlined">arrow_back</span>Quay lại
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h2>Gửi báo cáo lừa đảo</h2>
+          <p>Nhập thông tin bạn nghi ngờ. Admin sẽ xem và duyệt.</p>
+
+          <form id="reportForm" style="margin-top:12px;">
+            <div class="field">
+              <div class="label">Bạn muốn báo cáo gì?</div>
+              <select id="type" required>
+                <option value="phone">Số điện thoại</option>
+                <option value="link">Đường link</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="label">Nội dung</div>
+              <input id="value" type="text" placeholder="Nhập số điện thoại hoặc đường link..." required />
+            </div>
+
+            <div class="field">
+              <div class="label">Mô tả (tuỳ chọn)</div>
+              <input id="description" type="text" placeholder="Ví dụ: giả danh nhân viên ngân hàng, yêu cầu chuyển tiền..." />
+            </div>
+
+            <button class="btn full" type="submit" id="btnSend">
+              <span class="material-symbols-outlined">send</span>Gửi báo cáo
+            </button>
+          </form>
+
+          <div class="notice" style="margin-top:12px;">
+            Bạn có thể ghi thêm chi tiết để admin duyệt nhanh hơn.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAuth, apiFetch } from "./js/api.js";
+    import { showToast } from "./js/toast.js";
+
+    if (!requireAuth("./login.html")) {}
+
+    const form = document.getElementById("reportForm");
+    const btn = document.getElementById("btnSend");
+
+    form.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+
+      const type = document.getElementById("type").value;
+      const value = document.getElementById("value").value.trim();
+      const description = document.getElementById("description").value.trim();
+
+      if (!value) return;
+
+      btn.disabled = true;
+      btn.querySelector(".material-symbols-outlined").textContent = "hourglass_top";
+
+      try{
+        const data = await apiFetch("/api/report", {
+          method:"POST",
+          auth:false,
+          body:{ type, value, description }
+        });
+
+        showToast({
+          type: "ok",
+          message: data?.message || "Đã gửi báo cáo. Chờ admin duyệt.",
+          duration: 4500
+        });
+
+        form.reset();
+      }catch(err){
+        showToast({
+          type: "err",
+          message: err.message || "Gửi không thành công. Vui lòng thử lại.",
+          duration: 4500
+        });
+      }finally{
+        btn.disabled = false;
+        btn.querySelector(".material-symbols-outlined").textContent = "send";
+      }
+    });
+  </script>
+</body>
+</html>

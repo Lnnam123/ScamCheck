@@ -1,137 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <title>ScamCheck - Trang chính</title>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/select.css">
+  <title>ScamCheck • Trang chính</title>
+  <link rel="stylesheet" href="./css/responsive.css" />
+  <link rel="stylesheet" href="./css/app.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
-
-<body class="app-bg select-page">
-  <!-- Top bar -->
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-icon" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
-            <rect width="22" height="22" rx="6" fill="rgba(255,255,255,.9)"/>
-            <path d="M7 8h8v6H7V8zm1.5 1.5v3h5v-3h-5zM7 6h8v1.5H7V6zm0 9h8V16H7v-1z"
-              fill="#4F46E5"/>
-          </svg>
+<body>
+  <div class="page">
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo"></div>
+          <div class="brand-title">
+            <b>ScamCheck</b>
+            <span>Trang chính</span>
+          </div>
         </div>
-        <div class="brand-text">
-          <div class="brand-name">ScamCheck</div>
-          <div class="brand-sub">Tra cứu • Báo cáo • Bảo vệ cộng đồng</div>
+
+        <div class="nav-actions row" style="gap:10px; flex-wrap:wrap;">
+          <a class="btn secondary" href="./account.html">
+            <span class="material-symbols-outlined">person</span>Tài khoản
+          </a>
+          <a class="btn secondary" href="./admin.html" id="adminBtn" style="display:none;">
+            <span class="material-symbols-outlined">admin_panel_settings</span>Admin
+          </a>
+          <button class="btn secondary" type="button" id="logoutBtn">
+            <span class="material-symbols-outlined">logout</span>Đăng xuất
+          </button>
         </div>
       </div>
 
-      <nav class="nav">
-        <button class="nav-pill" onclick="goAccount()">Tài khoản</button>
-        <button class="nav-pill" onclick="about()">Giới thiệu</button>
-        <button class="nav-pill danger" onclick="logout()">Đăng xuất</button>
-      </nav>
+      <div class="card">
+        <div class="card-body">
+          <h1 style="margin:0;">Bạn muốn làm gì?</h1>
+          <p style="margin-top:8px;">
+            Chọn 1 mục bên dưới. Dùng tốt trên máy tính và điện thoại.
+          </p>
+
+          <div class="grid cols-3" style="margin-top:14px;">
+            <a class="card" href="./check-phone.html" style="text-decoration:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12);">
+              <div class="card-body">
+                <div class="row" style="justify-content:space-between;">
+                  <span class="badge">📞</span>
+                  <span class="material-symbols-outlined">chevron_right</span>
+                </div>
+                <h2 style="margin-top:10px;">Kiểm tra số điện thoại</h2>
+                <p>Nhập số nghi ngờ để xem có cảnh báo không.</p>
+                <div class="row" style="gap:10px; margin-top:10px; flex-wrap:wrap;">
+                  <span class="badge">Nhanh</span>
+                  <span class="badge">Dễ dùng</span>
+                </div>
+              </div>
+            </a>
+
+            <a class="card" href="./check-link.html" style="text-decoration:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12);">
+              <div class="card-body">
+                <div class="row" style="justify-content:space-between;">
+                  <span class="badge">🔗</span>
+                  <span class="material-symbols-outlined">chevron_right</span>
+                </div>
+                <h2 style="margin-top:10px;">Kiểm tra đường link</h2>
+                <p>Dán link vào để kiểm tra có bị báo xấu không.</p>
+                <div class="row" style="gap:10px; margin-top:10px; flex-wrap:wrap;">
+                  <span class="badge">Rõ ràng</span>
+                  <span class="badge">Gọn</span>
+                </div>
+              </div>
+            </a>
+
+            <a class="card" href="./report.html" style="text-decoration:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12);">
+              <div class="card-body">
+                <div class="row" style="justify-content:space-between;">
+                  <span class="badge">🧾</span>
+                  <span class="material-symbols-outlined">chevron_right</span>
+                </div>
+                <h2 style="margin-top:10px;">Gửi báo cáo</h2>
+                <p>Nếu bạn nghi ngờ lừa đảo, gửi báo cáo để admin duyệt.</p>
+                <div class="row" style="gap:10px; margin-top:10px; flex-wrap:wrap;">
+                  <span class="badge">Hỗ trợ cộng đồng</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <div class="notice" style="margin-top:14px;">
+            Gợi ý: nếu bạn gặp link/số lạ, hãy kiểm tra trước — rồi mới giao dịch.
+          </div>
+        </div>
+      </div>
     </div>
-  </header>
+  </div>
 
-  <!-- Main -->
-  <main class="shell">
-    <section class="hero">
-      <div class="hero-left">
-        <div class="hello" id="helloText">Xin chào</div>
-        <h1 class="headline">
-          Kiểm tra lừa đảo <span class="grad">nhanh</span>, gọn, rõ.
-        </h1>
-        <p class="sub">
-          Chọn phương thức tra cứu: số điện thoại hoặc đường link.
-          Kết quả hiển thị rõ ràng và bạn có thể báo cáo nếu phát hiện dấu hiệu bất thường.
-        </p>
+  <script type="module">
+    import { requireAuth, getUser } from "./js/api.js";
 
-        <div class="cta-row">
-          <a class="cta primary" href="check-phone.html">
-            <span class="cta-ico">📱</span>
-            <span>
-              <b>Kiểm tra số điện thoại</b>
-              <small>Tra cứu & báo cáo</small>
-            </span>
-          </a>
+    // phải đăng nhập mới vào được
+    if (!requireAuth("./login.html")) {}
 
-          <a class="cta ghost" href="check-link.html">
-            <span class="cta-ico">🔗</span>
-            <span>
-              <b>Kiểm tra đường link</b>
-              <small>Tra cứu & báo cáo</small>
-            </span>
-          </a>
-        </div>
+    const user = getUser?.() || null;
+    const adminBtn = document.getElementById("adminBtn");
+    if (user && user.role === "admin") adminBtn.style.display = "inline-flex";
 
-        <div class="mini-cards">
-          <div class="mini-card">
-            <div class="mini-title">Realtime</div>
-            <div class="mini-sub">Kết quả dựa trên dữ liệu đã duyệt.</div>
-          </div>
-          <div class="mini-card">
-            <div class="mini-title">Bảo mật</div>
-            <div class="mini-sub">Token đăng nhập, reset password có hạn.</div>
-          </div>
-          <div class="mini-card">
-            <div class="mini-title">Dễ dùng</div>
-            <div class="mini-sub">Giao diện gọn, animation mượt.</div>
-          </div>
-        </div>
-
-        <a id="adminShortcut" class="admin-link" href="admin.html" style="display:none;">
-          Vào trang Admin →
-        </a>
-      </div>
-
-      <aside class="hero-right">
-        <div class="glass-card">
-          <div class="gc-top">
-            <div class="gc-badge">Protected</div>
-            <div class="gc-title">Bắt đầu kiểm tra</div>
-            <div class="gc-sub">Chọn phương thức ở bên trái</div>
-          </div>
-
-          <div class="gc-actions">
-            <button class="btnx btnx-primary" onclick="goPhone()">📱 Kiểm tra SĐT</button>
-            <button class="btnx btnx-ghost" onclick="goLink()">🔗 Kiểm tra Link</button>
-          </div>
-
-          <div class="gc-foot">
-            <span>🔒 Hệ thống hoạt động</span>
-            <span class="gc-pill">Secure</span>
-          </div>
-        </div>
-      </aside>
-    </section>
-  </main>
-
-  <script>
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = localStorage.getItem("token");
-    if (!user || !token) location.href = "login.html";
-
-    const helloText = document.getElementById("helloText");
-    const adminShortcut = document.getElementById("adminShortcut");
-
-    helloText.innerText = `Xin chào, ${user.fullname || user.username}`;
-    if (user.role === "admin") adminShortcut.style.display = "inline-block";
-
-    function goPhone(){ location.href = "check-phone.html"; }
-    function goLink(){ location.href = "check-link.html"; }
-    function goAccount(){ location.href = "account.html"; }
-    function about(){ alert("ScamCheck - công cụ kiểm tra & báo cáo lừa đảo."); }
-    function logout(){
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      location.href = "login.html";
-    }
+    // đăng xuất (an toàn: xóa nhiều key hay dùng)
+    document.getElementById("logoutBtn").addEventListener("click", ()=>{
+      ["token","user","scamcheck_token","scamcheck_user"].forEach(k => localStorage.removeItem(k));
+      window.location.href = "./login.html";
+    });
   </script>
 </body>
 </html>
