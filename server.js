@@ -580,5 +580,5 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   logger.info("SERVER_STARTED", { port: PORT });
-  console.log(`🚀 Server chạy: http://localhost:${PORT}/login.html`);
+  console.log(`Server chạy: http://localhost:${PORT}/login.html`);
 });
