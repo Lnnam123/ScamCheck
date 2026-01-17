@@ -1,0 +1,9 @@
+[2026-01-04T10:21:11.149Z] [INFO] SERVER_STARTED {"port":3000}
+[2026-01-04T10:21:11.172Z] [INFO] DB_CONNECT_SUCCESS
+[2026-01-04T10:21:18.720Z] [INFO] LOGIN_SUCCESS {"userId":7,"username":"nam","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2026-01-04T10:22:06.743Z] [INFO] LOGIN_SUCCESS {"userId":7,"username":"nam","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"}
+[2026-01-04T13:43:00.529Z] [INFO] SERVER_STARTED {"port":3000}
+[2026-01-04T13:43:00.559Z] [INFO] DB_CONNECT_SUCCESS
+[2026-01-04T13:43:34.552Z] [INFO] LOGIN_SUCCESS {"userId":7,"username":"nam","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2026-01-04T13:43:56.964Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"admin","userId":6,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2026-01-04T13:44:06.651Z] [INFO] LOGIN_SUCCESS {"userId":6,"username":"admin","role":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}

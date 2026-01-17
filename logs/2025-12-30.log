@@ -111,3 +111,24 @@
 [2025-12-30T09:55:14.540Z] [INFO] LOGIN_SUCCESS {"userId":7,"username":"nam","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
 [2025-12-30T09:55:31.573Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"nam","userId":7,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
 [2025-12-30T09:55:34.174Z] [INFO] LOGIN_SUCCESS {"userId":7,"username":"nam","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-30T12:10:03.394Z] [INFO] SERVER_STARTED {"port":3000}
+[2025-12-30T12:10:03.412Z] [INFO] DB_CONNECT_SUCCESS
+[2025-12-30T12:10:22.938Z] [WARN] LOGIN_FAIL_USERNAME {"username":"nhatnam","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-30T12:10:25.124Z] [WARN] LOGIN_FAIL_USERNAME {"username":"nhatnam","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-30T12:10:28.692Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"nam","userId":7,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-30T12:10:29.333Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"nam","userId":7,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-30T12:10:29.472Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"nam","userId":7,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-30T12:10:44.448Z] [INFO] LOGIN_SUCCESS {"userId":7,"username":"nam","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-30T15:05:08.367Z] [INFO] SERVER_STARTED {"port":3000}
+[2025-12-30T15:05:08.374Z] [ERROR] DB_CONNECT_FAIL {"error":""}
+[2025-12-30T15:05:34.143Z] [ERROR] LOGIN_ERROR_DB {"username":"nhatnam","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","error":"Can't add new command when connection is in closed state"}
+[2025-12-30T15:05:37.551Z] [ERROR] LOGIN_ERROR_DB {"username":"nhatnam","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","error":"Can't add new command when connection is in closed state"}
+[2025-12-30T15:05:37.948Z] [ERROR] LOGIN_ERROR_DB {"username":"nhatnam","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","error":"Can't add new command when connection is in closed state"}
+[2025-12-30T15:05:38.112Z] [ERROR] LOGIN_ERROR_DB {"username":"nhatnam","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","error":"Can't add new command when connection is in closed state"}
+[2025-12-30T15:05:38.235Z] [ERROR] LOGIN_ERROR_DB {"username":"nhatnam","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","error":"Can't add new command when connection is in closed state"}
+[2025-12-30T15:05:48.552Z] [ERROR] FORGOT_DB_ERROR {"error":"Can't add new command when connection is in closed state","email":"maihoang20182006@gmail.com"}
+[2025-12-30T15:29:13.068Z] [INFO] SERVER_STARTED {"port":3000}
+[2025-12-30T15:29:13.085Z] [INFO] DB_CONNECT_SUCCESS
+[2025-12-30T15:29:27.820Z] [INFO] LOGIN_SUCCESS {"userId":6,"username":"admin","role":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-30T15:31:40.405Z] [INFO] LOGIN_SUCCESS {"userId":9,"username":"phuonggiang","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2025-12-30T15:32:14.251Z] [INFO] LOGIN_SUCCESS {"userId":9,"username":"phuonggiang","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}

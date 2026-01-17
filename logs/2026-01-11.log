@@ -1,0 +1,22 @@
+[2026-01-10T18:44:02.361Z] [INFO] SERVER_STARTED {"port":3000}
+[2026-01-10T18:44:02.381Z] [INFO] DB_CONNECT_SUCCESS
+[2026-01-10T18:44:31.429Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"nam","userId":7,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2026-01-10T18:44:34.761Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"nam","userId":7,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2026-01-10T18:44:34.851Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"nam","userId":7,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2026-01-10T18:44:37.411Z] [INFO] LOGIN_SUCCESS {"userId":7,"username":"nam","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2026-01-10T18:47:19.335Z] [INFO] FORGOT_RESET_LINK {"resetLink":"http://localhost:3000/reset-password.html?token=9e9be77b0b2f2726b4c10d575a91a452f1d42e1b3dc96dd3ae9c30a5c5988f9a"}
+[2026-01-10T18:47:43.723Z] [INFO] RESET_PASSWORD_SUCCESS {"userId":8,"resetId":12}
+[2026-01-10T18:48:00.023Z] [INFO] LOGIN_SUCCESS {"userId":8,"username":"nguyenhuuquan","role":"user","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2026-01-10T19:01:48.168Z] [ERROR] LOGIN_ERROR_DB {"username":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","error":"Can't add new command when connection is in closed state"}
+[2026-01-10T19:01:52.441Z] [ERROR] LOGIN_ERROR_DB {"username":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","error":"Can't add new command when connection is in closed state"}
+[2026-01-10T19:01:58.791Z] [ERROR] LOGIN_ERROR_DB {"username":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","error":"Can't add new command when connection is in closed state"}
+[2026-01-10T19:01:59.411Z] [ERROR] LOGIN_ERROR_DB {"username":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","error":"Can't add new command when connection is in closed state"}
+[2026-01-10T19:01:59.830Z] [ERROR] LOGIN_ERROR_DB {"username":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","error":"Can't add new command when connection is in closed state"}
+[2026-01-10T19:02:22.215Z] [ERROR] FORGOT_DB_ERROR {"error":"Can't add new command when connection is in closed state","email":"admin@scamcheck.com"}
+[2026-01-10T19:02:42.960Z] [INFO] SERVER_STARTED {"port":3000}
+[2026-01-10T19:02:42.975Z] [INFO] DB_CONNECT_SUCCESS
+[2026-01-10T19:02:53.057Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"admin","userId":6,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2026-01-10T19:02:58.143Z] [WARN] LOGIN_FAIL_PASSWORD {"username":"admin","userId":6,"ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
+[2026-01-10T19:03:05.186Z] [INFO] FORGOT_RESET_LINK {"resetLink":"http://localhost:3000/reset-password.html?token=23d7809e5238bfc085a8e6b98815776ffaa33a03b06605ae4065736c5a5464b3"}
+[2026-01-10T19:03:16.681Z] [INFO] RESET_PASSWORD_SUCCESS {"userId":6,"resetId":13}
+[2026-01-10T19:03:28.691Z] [INFO] LOGIN_SUCCESS {"userId":6,"username":"admin","role":"admin","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
